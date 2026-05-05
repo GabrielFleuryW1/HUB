@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabriel Fleury · Ferramentas Financeiras</title>
+<meta name="description" content="Calculadoras e simuladores financeiros gratuitos desenvolvidos por Gabriel Fleury — Consultoria Financeira.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #112850;
+    --navy-card: #0f2444;
+    --navy-light: #1a3a66;
+    --gold: #C9A84C;
+    --gold-light: #e2c47a;
+    --cream: #F5F0E8;
+    --text-muted: rgba(245,240,232,0.55);
+    --green: #4CAF82;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 56px;
+    border-bottom: 1px solid rgba(201,168,76,0.18);
+    position: sticky; top: 0;
+    background: rgba(11,31,58,0.97);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  .logo { display: flex; flex-direction: column; gap: 2px; text-decoration: none; }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em; color: var(--cream); line-height: 1; }
+  .logo-sub { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); font-weight: 300; }
+  .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+  .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 13px; letter-spacing: 0.05em; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-cta {
+    background: var(--gold); color: var(--navy) !important;
+    padding: 9px 22px; border-radius: 2px;
+    font-weight: 500 !important; font-size: 12px !important;
+    letter-spacing: 0.1em !important; text-transform: uppercase;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--gold-light) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 100px 56px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -100px; right: -100px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+  }
+  .hero-eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--gold); }
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(42px, 5.5vw, 70px);
+    font-weight: 300; line-height: 1.1;
+    max-width: 680px; margin-bottom: 22px;
+  }
+  .hero h1 em { font-style: italic; color: var(--gold-light); }
+  .hero-desc {
+    max-width: 500px; font-size: 15px; line-height: 1.75;
+    color: var(--text-muted); font-weight: 300; margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 14px; align-items: center; }
+  .btn-primary {
+    background: var(--gold); color: var(--navy); border: none;
+    padding: 14px 34px; font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; cursor: pointer; border-radius: 2px;
+    transition: background 0.2s, transform 0.15s; text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: var(--cream);
+    border: 1px solid rgba(245,240,232,0.2);
+    padding: 13px 28px; font-family: 'DM Sans', sans-serif;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px; transition: border-color 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: rgba(245,240,232,0.5); }
+
+  .hero-stats {
+    display: flex; gap: 52px; margin-top: 68px;
+    padding-top: 40px; border-top: 1px solid rgba(201,168,76,0.14);
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 5px; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: var(--gold-light); line-height: 1; }
+  .stat-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,168,76,0.2), transparent); margin: 0 56px; }
+
+  /* ── TOOLS SECTION ── */
+  .tools-section { padding: 72px 56px; }
+  .section-header { margin-bottom: 48px; }
+  .section-eyebrow { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1.2; }
+  .section-title span { font-style: italic; color: var(--gold-light); }
+
+  /* CATEGORY */
+  .category-block { margin-bottom: 56px; }
+  .category-label {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 20px;
+  }
+  .category-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+  .tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+
+  /* TOOL CARD */
+  .tool-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(201,168,76,0.08);
+    padding: 32px 28px 28px;
+    position: relative; overflow: hidden;
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    text-decoration: none; color: inherit;
+    display: block;
+  }
+  .tool-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 2px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .tool-card:hover { background: rgba(201,168,76,0.05); border-color: rgba(201,168,76,0.25); transform: translateY(-2px); }
+  .tool-card:hover::before { transform: scaleX(1); }
+  .tool-card.featured { grid-column: span 2; border-color: rgba(201,168,76,0.15); background: rgba(201,168,76,0.04); }
+  .tool-card.coming-soon { opacity: 0.45; cursor: default; pointer-events: none; }
+  .tool-card.coming-soon:hover { transform: none; }
+
+  .tool-badge {
+    display: inline-block; font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.35);
+    padding: 3px 8px; border-radius: 1px; margin-bottom: 18px;
+  }
+  .tool-badge.new { color: var(--green); border-color: rgba(76,175,130,0.35); }
+  .tool-badge.soon { color: var(--text-muted); border-color: rgba(255,255,255,0.1); }
+
+  .tool-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(201,168,76,0.09);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px; font-size: 18px;
+  }
+  .tool-name {
+    font-family: 'Cormorant Garamond', serif; font-size: 21px;
+    font-weight: 400; line-height: 1.2; margin-bottom: 9px; color: var(--cream);
+  }
+  .tool-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
+  .tool-arrow {
+    position: absolute; bottom: 24px; right: 24px;
+    font-size: 16px; color: var(--gold); opacity: 0;
+    transform: translateX(-6px); transition: opacity 0.2s, transform 0.2s;
+  }
+  .tool-card:hover .tool-arrow { opacity: 1; transform: translateX(0); }
+
+  /* ── ABOUT ── */
+  .about-section {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    margin: 0 56px;
+  }
+  .about-left { padding: 60px 52px 60px 0; border-right: 1px solid rgba(201,168,76,0.1); }
+  .about-right { padding: 60px 0 60px 52px; }
+  .about-eyebrow { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .about-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; line-height: 1.3; margin-bottom: 18px; }
+  .about-body { font-size: 14px; line-height: 1.8; color: var(--text-muted); font-weight: 300; }
+  .features-list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+  .features-list li { display: flex; gap: 14px; align-items: flex-start; }
+  .feature-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); margin-top: 7px; flex-shrink: 0; }
+  .feature-text { font-size: 14px; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
+
+  /* ── CTA ── */
+  .cta-section {
+    margin: 56px;
+    background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-mid) 100%);
+    border: 1px solid rgba(201,168,76,0.18); border-radius: 4px;
+    padding: 60px 68px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::after {
+    content: ''; position: absolute; right: -80px; top: -80px;
+    width: 360px; height: 360px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+  }
+  .cta-text { position: relative; z-index: 1; }
+  .cta-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1.2; max-width: 480px; }
+  .cta-title em { font-style: italic; color: var(--gold-light); }
+  .cta-sub { font-size: 14px; color: var(--text-muted); font-weight: 300; margin-top: 10px; max-width: 400px; line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 36px 56px;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; letter-spacing: 0.04em; }
+  .footer-links { display: flex; gap: 24px; list-style: none; }
+  .footer-links a { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.06em; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy { font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-eyebrow { animation: fadeUp 0.5s ease both; }
+  .hero h1 { animation: fadeUp 0.5s 0.08s ease both; }
+  .hero-desc { animation: fadeUp 0.5s 0.16s ease both; }
+  .hero-actions { animation: fadeUp 0.5s 0.22s ease both; }
+  .hero-stats { animation: fadeUp 0.5s 0.3s ease both; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <span class="logo-name">Gabriel Fleury</span>
+    <span class="logo-sub">Consultoria Financeira</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#ferramentas">Ferramentas</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="https://wa.me/5511999999999" target="_blank" class="nav-cta">Fale comigo</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Ferramentas Financeiras Gratuitas</div>
+  <h1>Decisões mais inteligentes começam com <em>clareza nos números</em></h1>
+  <p class="hero-desc">
+    Calculadoras e simuladores desenvolvidos com a metodologia que uso em consultorias reais. Sem viés comercial, sem enrolação — só análise honesta.
+  </p>
+  <div class="hero-actions">
+    <a href="#ferramentas" class="btn-primary">Explorar ferramentas</a>
+    <a href="https://wa.me/5511999999999" target="_blank" class="btn-ghost">Agendar consultoria</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num" id="contador-ferramentas">3</span>
+      <span class="stat-label">Ferramentas ativas</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Gratuito</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">∞</span>
+      <span class="stat-label">Simulações</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FERRAMENTAS -->
+<section class="tools-section" id="ferramentas">
+  <div class="section-header">
+    <div class="section-eyebrow">Simuladores e Calculadoras</div>
+    <h2 class="section-title">Ferramentas <span>disponíveis</span></h2>
+  </div>
+
+  <!-- CATEGORIA: INVESTIMENTOS -->
+  <div class="category-block">
+    <div class="category-label">Investimentos & Patrimônio</div>
+    <div class="tools-grid">
+
+      <a href="ferramentas/aportes.html" class="tool-card featured">
+        <div class="tool-badge">Popular</div>
+        <div class="tool-icon">📈</div>
+        <div class="tool-name">Simulador de Aportes Mensais</div>
+        <p class="tool-desc">Veja como seu patrimônio cresce com juros compostos e aportes regulares. Projeção completa com gráfico, tabela anual e insight sobre o poder dos juros compostos.</p>
+        <div class="tool-arrow">→</div>
+      </a>
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">🎯</div>
+        <div class="tool-name">Independência Financeira</div>
+        <p class="tool-desc">Quanto precisa acumular e em quanto tempo para viver de renda com segurança.</p>
+      </div>
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">📊</div>
+        <div class="tool-name">Comparador de Renda Fixa</div>
+        <p class="tool-desc">CDB, Tesouro e LCI/LCA com equivalência bruta, líquida e desconto de IR.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CATEGORIA: CRÉDITO -->
+  <div class="category-block">
+    <div class="category-label">Crédito & Financiamento</div>
+    <div class="tools-grid">
+
+      <a href="ferramentas/financiamento.html" class="tool-card">
+        <div class="tool-badge">Essencial</div>
+        <div class="tool-icon">🏦</div>
+        <div class="tool-name">Custo Real do Financiamento</div>
+        <p class="tool-desc">Price vs SAC, CET, total de juros e tabela mês a mês. Veja o que o banco não te mostra.</p>
+        <div class="tool-arrow">→</div>
+      </a>
+
+      <a href="ferramentas/consorcio.html" class="tool-card featured">
+        <div class="tool-badge new">Novo</div>
+        <div class="tool-icon">⚖️</div>
+        <div class="tool-name">Financiamento × Consórcio</div>
+        <p class="tool-desc">Comparativo completo com custo de oportunidade real, veredicto automático e gráfico de custo acumulado. A ferramenta mais completa sobre esse tema no Brasil.</p>
+        <div class="tool-arrow">→</div>
+      </a>
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">❄️</div>
+        <div class="tool-name">Bola de Neve vs Avalanche</div>
+        <p class="tool-desc">Qual estratégia quita suas dívidas mais rápido e com menor custo total?</p>
+      </div>
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">💳</div>
+        <div class="tool-name">Custo Real do Parcelamento</div>
+        <p class="tool-desc">O que aquela parcela "pequena" realmente custa em juros ao longo do tempo.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CATEGORIA: PLANEJAMENTO -->
+  <div class="category-block">
+    <div class="category-label">Planejamento Pessoal</div>
+    <div class="tools-grid">
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">🛡️</div>
+        <div class="tool-name">Reserva de Emergência</div>
+        <p class="tool-desc">Quanto guardar com base no seu perfil, estilo de vida e estabilidade de renda.</p>
+      </div>
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">🏠</div>
+        <div class="tool-name">Comprar × Alugar</div>
+        <p class="tool-desc">Análise patrimonial comparando as duas opções ao longo do tempo.</p>
+      </div>
+
+      <div class="tool-card coming-soon">
+        <div class="tool-badge soon">Em breve</div>
+        <div class="tool-icon">🚗</div>
+        <div class="tool-name">Troca de Carro</div>
+        <p class="tool-desc">Custo total de propriedade mais o custo de oportunidade do dinheiro parado no bem.</p>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<div class="divider"></div>
+
+<!-- SOBRE -->
+<section class="about-section" id="sobre">
+  <div class="about-left">
+    <div class="about-eyebrow">Sobre este projeto</div>
+    <h3 class="about-title">Por que criar ferramentas gratuitas?</h3>
+    <p class="about-body">
+      Porque a maioria das pessoas toma as maiores decisões financeiras da vida — comprar um imóvel, contratar um financiamento, começar a investir — sem ter acesso às mesmas ferramentas que profissionais usam no dia a dia.<br><br>
+      Essas calculadoras são desenvolvidas com base em casos reais de consultoria. Sem viés comercial. Sem interesse em te empurrar um produto.
+    </p>
+  </div>
+  <div class="about-right">
+    <ul class="features-list">
+      <li><div class="feature-dot"></div><span class="feature-text">Resultados que refletem a realidade — não o que um banco quer que você veja</span></li>
+      <li><div class="feature-dot"></div><span class="feature-text">Desenvolvidas com base em centenas de atendimentos reais de consultoria financeira pessoal</span></li>
+      <li><div class="feature-dot"></div><span class="feature-text">Linguagem humana — os resultados são explicados, não só exibidos em números frios</span></li>
+      <li><div class="feature-dot"></div><span class="feature-text">Novas ferramentas adicionadas regularmente conforme as dúvidas mais frequentes dos clientes</span></li>
+      <li><div class="feature-dot"></div><span class="feature-text">Acesso 100% gratuito — sempre. Sem cadastro, sem paywall, sem anúncios</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-text">
+    <div class="cta-title">As ferramentas calculam.<br><em>A consultoria transforma.</em></div>
+    <p class="cta-sub">Números são o ponto de partida. O que fazemos na consultoria é transformar esses números em um plano real, com acompanhamento e estratégia.</p>
+  </div>
+  <a href="https://wa.me/5511999999999" target="_blank" class="btn-primary" style="white-space:nowrap;flex-shrink:0;position:relative;z-index:1;">
+    Agendar uma conversa
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Gabriel Fleury · Consultoria Financeira</div>
+  <ul class="footer-links">
+    <li><a href="https://instagram.com" target="_blank">Instagram</a></li>
+    <li><a href="https://linkedin.com" target="_blank">LinkedIn</a></li>
+    <li><a href="https://wa.me/5511999999999" target="_blank">WhatsApp</a></li>
+  </ul>
+  <span class="footer-copy">© 2025 Gabriel Fleury</span>
+</footer>
+
+</body>
+</html>
