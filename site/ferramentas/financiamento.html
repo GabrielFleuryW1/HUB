@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Financiamento · Gabriel Fleury</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #112850;
+    --navy-card: #0f2444;
+    --navy-light: #1a3a66;
+    --gold: #C9A84C;
+    --gold-light: #e2c47a;
+    --cream: #F5F0E8;
+    --text-muted: rgba(245,240,232,0.55);
+    --red: #E07070;
+    --green: #4CAF82;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--cream); min-height: 100vh; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid rgba(201,168,76,0.18);
+    background: rgba(11,31,58,0.97);
+  }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; }
+  .logo-sub { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 300; }
+  .nav-back { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--gold); }
+
+  .page-hero {
+    padding: 52px 48px 36px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    background: linear-gradient(180deg, rgba(26,58,102,0.3) 0%, transparent 100%);
+  }
+  .breadcrumb { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; opacity: 0.8; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 4vw, 50px); font-weight: 300; line-height: 1.1; margin-bottom: 10px; }
+  .page-title em { font-style: italic; color: var(--gold-light); }
+  .page-desc { font-size: 14px; color: var(--text-muted); font-weight: 300; max-width: 580px; line-height: 1.65; }
+
+  .main-layout { display: grid; grid-template-columns: 400px 1fr; min-height: calc(100vh - 170px); }
+
+  .inputs-panel {
+    background: var(--navy-card);
+    border-right: 1px solid rgba(201,168,76,0.12);
+    padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+
+  .panel-section-title {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+    padding-bottom: 14px; border-bottom: 1px solid rgba(201,168,76,0.12);
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-size: 12px; color: var(--text-muted); letter-spacing: 0.05em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .field-value-display { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--gold-light); }
+  .field-hint { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 1px; }
+
+  .input-wrapper { position: relative; }
+  .input-prefix { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--text-muted); pointer-events: none; }
+  .input-suffix { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none; }
+
+  input[type="number"] {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 3px; color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 15px;
+    padding: 11px 14px 11px 36px; outline: none; transition: border-color 0.2s, background 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: rgba(201,168,76,0.5); background: rgba(255,255,255,0.07); }
+
+  input[type="range"] {
+    width: 100%; -webkit-appearance: none; height: 3px;
+    background: rgba(201,168,76,0.2); border-radius: 2px; outline: none; margin-top: 5px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+    background: var(--gold); cursor: pointer; transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .sistema-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(201,168,76,0.15); }
+  .sistema-btn {
+    padding: 11px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 400;
+    background: rgba(255,255,255,0.03); color: var(--text-muted); transition: all 0.2s;
+    border: none; font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em;
+  }
+  .sistema-btn:hover { background: rgba(201,168,76,0.06); color: var(--cream); }
+  .sistema-btn.active { background: rgba(201,168,76,0.12); color: var(--gold-light); }
+  .sistema-btn.both { grid-column: span 2; font-size: 12px; }
+  .sistema-btn.both.active { background: rgba(201,168,76,0.1); }
+
+  .calc-btn {
+    width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; border-radius: 3px;
+    transition: background 0.2s, transform 0.15s; margin-top: 4px;
+  }
+  .calc-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .results-panel { padding: 36px 40px; display: flex; flex-direction: column; gap: 28px; overflow-y: auto; }
+
+  /* KPI */
+  .kpi-section-title { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+
+  .kpi-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .kpi-block { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 20px 22px; }
+  .kpi-block-title { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(201,168,76,0.12); }
+  .kpi-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .kpi-row:last-child { border-bottom: none; }
+  .kpi-row-label { font-size: 12px; color: var(--text-muted); }
+  .kpi-row-value { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; }
+  .kpi-row-value.gold { color: var(--gold-light); }
+  .kpi-row-value.red { color: var(--red); }
+  .kpi-row-value.green { color: var(--green); }
+
+  .kpi-single { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .kpi-card-sm { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 18px 18px; }
+  .kpi-card-sm .kpi-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .kpi-card-sm .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; }
+  .kpi-card-sm .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* CHART */
+  .chart-wrapper { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 24px 24px 16px; }
+  .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .chart-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 300; }
+  .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  canvas { width: 100% !important; max-height: 240px; }
+
+  /* INSIGHT */
+  .insight-box { background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.18); border-radius: 4px; padding: 18px 22px; display: flex; gap: 14px; align-items: flex-start; }
+  .insight-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .insight-text { font-size: 13px; line-height: 1.7; color: rgba(245,240,232,0.8); font-weight: 300; }
+  .insight-text strong { color: var(--cream); font-weight: 500; }
+
+  /* TABLE */
+  .breakdown-wrapper { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; overflow: hidden; }
+  .breakdown-header { padding: 16px 22px; border-bottom: 1px solid rgba(201,168,76,0.1); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .breakdown-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; }
+  .tab-toggle { display: flex; gap: 4px; }
+  .tab-btn { padding: 6px 14px; font-size: 11px; letter-spacing: 0.08em; background: transparent; border: 1px solid rgba(201,168,76,0.15); color: var(--text-muted); cursor: pointer; border-radius: 2px; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .tab-btn.active { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold-light); }
+  .table-scroll { max-height: 280px; overflow-y: auto; }
+  .table-scroll::-webkit-scrollbar { width: 4px; }
+  .table-scroll::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 10px 16px; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); text-align: right; background: rgba(255,255,255,0.02); position: sticky; top: 0; }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(201,168,76,0.04); }
+  tbody td { padding: 9px 16px; font-size: 12px; text-align: right; color: var(--text-muted); }
+  tbody td:first-child { text-align: left; color: var(--cream); }
+  tbody td.red { color: var(--red); }
+  tbody td.gold { color: var(--gold-light); }
+  tbody td.green { color: var(--green); }
+
+  /* EMPTY */
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 80px 40px; color: var(--text-muted); text-align: center; }
+  .empty-icon { font-size: 44px; opacity: 0.4; }
+  .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--cream); opacity: 0.5; }
+  .empty-desc { font-size: 13px; font-weight: 300; max-width: 300px; line-height: 1.6; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeIn 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <div class="logo-name">Gabriel Fleury</div>
+    <div class="logo-sub">Consultoria Financeira</div>
+  </div>
+  <a href="../index.html" class="nav-back">← Todas as ferramentas</a>
+</nav>
+
+<div class="page-hero">
+  <div class="breadcrumb">Ferramentas · Crédito</div>
+  <h1 class="page-title">Custo Real do <em>Financiamento</em></h1>
+  <p class="page-desc">Compare as tabelas Price e SAC, veja o total pago em juros, o Custo Efetivo Total e a evolução mês a mês da sua dívida.</p>
+</div>
+
+<div class="main-layout">
+
+  <aside class="inputs-panel">
+    <div class="panel-section-title">Dados do financiamento</div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Valor financiado</span>
+        <span class="field-value-display" id="lbl-valor">R$ 50.000</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix">R$</span>
+        <input type="number" id="valor" value="50000" min="1000" step="1000" oninput="syncLbl('valor','lbl-valor','currency')">
+      </div>
+      <input type="range" id="range-valor" min="5000" max="2000000" step="5000" value="50000"
+        oninput="document.getElementById('valor').value=this.value; syncLbl('valor','lbl-valor','currency')">
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Taxa de juros mensal</span>
+        <span class="field-value-display" id="lbl-taxa">1,00% a.m.</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix">%</span>
+        <input type="number" id="taxa" value="1" min="0.1" max="10" step="0.05" style="padding-left:36px" oninput="syncLbl('taxa','lbl-taxa','percent-m')">
+      </div>
+      <input type="range" id="range-taxa" min="0.1" max="5" step="0.05" value="1"
+        oninput="document.getElementById('taxa').value=this.value; syncLbl('taxa','lbl-taxa','percent-m')">
+      <div class="field-hint">Taxa nominal mensal do contrato</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Prazo</span>
+        <span class="field-value-display" id="lbl-prazo">36 meses</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix" style="font-size:11px;left:10px">meses</span>
+        <input type="number" id="prazo" value="36" min="1" max="520" step="1" style="padding-left:56px" oninput="syncLbl('prazo','lbl-prazo','meses')">
+      </div>
+      <input type="range" id="range-prazo" min="6" max="520" step="6" value="36"
+        oninput="document.getElementById('prazo').value=this.value; syncLbl('prazo','lbl-prazo','meses')">
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>Tarifa de abertura de crédito (TAC)</span></div>
+      <div class="input-wrapper">
+        <span class="input-prefix">R$</span>
+        <input type="number" id="tac" value="0" min="0" step="50">
+      </div>
+      <div class="field-hint">Cobrança única na contratação (opcional)</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>Seguro mensal (opcional)</span></div>
+      <div class="input-wrapper">
+        <span class="input-prefix">R$</span>
+        <input type="number" id="seguro" value="0" min="0" step="10">
+      </div>
+      <div class="field-hint">Valor fixo cobrado junto à parcela</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>Tipo de amortização</span></div>
+      <div class="sistema-toggle">
+        <button class="sistema-btn active" id="btn-price" onclick="setSistema('price')">Price</button>
+        <button class="sistema-btn" id="btn-sac" onclick="setSistema('sac')">SAC</button>
+        <button class="sistema-btn both" id="btn-ambos" onclick="setSistema('ambos')">Comparar os dois</button>
+      </div>
+      <div class="field-hint" id="hint-sistema">Parcelas fixas — juros maiores no início</div>
+    </div>
+
+    <button class="calc-btn" onclick="calcular()">Calcular financiamento</button>
+  </aside>
+
+  <main class="results-panel" id="results-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🏦</div>
+      <div class="empty-title">Pronto para calcular</div>
+      <div class="empty-desc">Preencha os dados do financiamento ao lado e clique em calcular.</div>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let chartInstance = null;
+  let sistemaAtivo = 'price';
+  let tabelaAtiva = 'price';
+
+  function fmt(v) { return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL', minimumFractionDigits:2 }); }
+  function fmtS(v) {
+    if (v >= 1e6) return 'R$ ' + (v/1e6).toFixed(2).replace('.',',') + 'M';
+    if (v >= 1e3) return 'R$ ' + (v/1e3).toFixed(1).replace('.',',') + 'K';
+    return fmt(v);
+  }
+  function pct(v) { return v.toFixed(2).replace('.',',') + '%'; }
+
+  function syncLbl(id, lblId, type) {
+    const v = parseFloat(document.getElementById(id).value) || 0;
+    const r = document.getElementById('range-' + id);
+    if (r) r.value = v;
+    const l = document.getElementById(lblId);
+    if (type === 'currency') l.textContent = fmt(v);
+    else if (type === 'percent-m') l.textContent = v.toFixed(2).replace('.',',') + '% a.m.';
+    else if (type === 'meses') l.textContent = v + ' mese' + (v===1?'':'s');
+  }
+
+  function setSistema(s) {
+    sistemaAtivo = s;
+    ['price','sac','ambos'].forEach(x => document.getElementById('btn-'+x).classList.toggle('active', x===s));
+    const hints = { price:'Parcelas fixas — juros maiores no início', sac:'Parcelas decrescentes — amortização constante', ambos:'Comparação lado a lado dos dois sistemas' };
+    document.getElementById('hint-sistema').textContent = hints[s];
+  }
+
+  function calcPrice(pv, taxa, n) {
+    const pmt = pv * taxa / (1 - Math.pow(1+taxa, -n));
+    const rows = [];
+    let saldo = pv;
+    let totalJuros = 0, totalAmort = 0;
+    for (let i = 1; i <= n; i++) {
+      const juros = saldo * taxa;
+      const amort = pmt - juros;
+      saldo -= amort;
+      totalJuros += juros;
+      totalAmort += amort;
+      rows.push({ mes: i, parcela: pmt, juros, amort, saldo: Math.max(0, saldo) });
+    }
+    return { pmt, totalJuros, totalPago: pmt * n, rows };
+  }
+
+  function calcSAC(pv, taxa, n) {
+    const amortConst = pv / n;
+    const rows = [];
+    let saldo = pv;
+    let totalJuros = 0, totalPago = 0;
+    for (let i = 1; i <= n; i++) {
+      const juros = saldo * taxa;
+      const parcela = amortConst + juros;
+      saldo -= amortConst;
+      totalJuros += juros;
+      totalPago += parcela;
+      rows.push({ mes: i, parcela, juros, amort: amortConst, saldo: Math.max(0, saldo) });
+    }
+    return { pmtInicial: rows[0].parcela, pmtFinal: rows[n-1].parcela, totalJuros, totalPago, rows };
+  }
+
+  function calcCET(totalPago, pv, n, tac, seguro) {
+    // CET mensal via Newton-Raphson
+    const totalComEncargos = totalPago + tac + seguro * n;
+    let i = 0.02;
+    for (let iter = 0; iter < 1000; iter++) {
+      const f = pv - (totalComEncargos / n) * (1 - Math.pow(1+i,-n)) / i - tac;
+      const df = (totalComEncargos / n) * ((1-Math.pow(1+i,-n))/(i*i) - n*Math.pow(1+i,-n-1)/i);
+      const ni = i - f/df;
+      if (Math.abs(ni - i) < 1e-10) { i = ni; break; }
+      i = ni;
+    }
+    const cetMensal = i * 100;
+    const cetAnual = (Math.pow(1+i,12)-1)*100;
+    return { cetMensal, cetAnual };
+  }
+
+  function calcular() {
+    const pv = parseFloat(document.getElementById('valor').value) || 0;
+    const taxaM = parseFloat(document.getElementById('taxa').value) / 100 || 0;
+    const n = parseInt(document.getElementById('prazo').value) || 0;
+    const tac = parseFloat(document.getElementById('tac').value) || 0;
+    const seguro = parseFloat(document.getElementById('seguro').value) || 0;
+
+    if (!pv || !taxaM || !n) { alert('Preencha valor, taxa e prazo.'); return; }
+
+    const price = calcPrice(pv, taxaM, n);
+    const sac = calcSAC(pv, taxaM, n);
+    const cetPrice = calcCET(price.totalPago, pv, n, tac, seguro);
+    const cetSac = calcCET(sac.totalPago, pv, n, tac, seguro);
+    const taxaAnual = (Math.pow(1+taxaM,12)-1)*100;
+
+    renderResults(price, sac, cetPrice, cetSac, pv, n, taxaM, taxaAnual, tac, seguro);
+  }
+
+  function renderResults(price, sac, cetPrice, cetSac, pv, n, taxaM, taxaAnual, tac, seguro) {
+    const panel = document.getElementById('results-panel');
+    const isBoth = sistemaAtivo === 'ambos';
+    const isPrice = sistemaAtivo === 'price';
+    const isSac = sistemaAtivo === 'sac';
+
+    const totalPagoPrice = price.totalPago + tac + seguro * n;
+    const totalPagoSac = sac.totalPago + tac + seguro * n;
+    const difTotal = totalPagoPrice - totalPagoSac;
+
+    panel.innerHTML = `
+      <div class="animate-in">
+        ${isBoth ? renderCompare(price, sac, cetPrice, cetSac, pv, n, tac, seguro, totalPagoPrice, totalPagoSac, difTotal) : renderSingle(isPrice ? price : sac, isPrice ? cetPrice : cetSac, isPrice, pv, n, tac, seguro)}
+      </div>
+
+      <div class="chart-wrapper animate-in" style="animation-delay:0.1s">
+        <div class="chart-header">
+          <div class="chart-title">Evolução do Saldo Devedor</div>
+          <div class="chart-legend">
+            ${isBoth || isPrice ? '<div class="legend-item"><div class="legend-dot" style="background:#C9A84C"></div>Price</div>' : ''}
+            ${isBoth || isSac ? '<div class="legend-item"><div class="legend-dot" style="background:#4CAF82"></div>SAC</div>' : ''}
+          </div>
+        </div>
+        <canvas id="meuChart"></canvas>
+      </div>
+
+      <div class="insight-box animate-in" style="animation-delay:0.15s">
+        <div class="insight-icon">💡</div>
+        <div class="insight-text">${gerarInsight(price, sac, cetPrice, cetSac, pv, n, isBoth, isPrice, difTotal, tac, seguro)}</div>
+      </div>
+
+      <div class="breakdown-wrapper animate-in" style="animation-delay:0.2s">
+        <div class="breakdown-header">
+          <div class="breakdown-title">Tabela de amortização</div>
+          ${isBoth ? `<div class="tab-toggle">
+            <button class="tab-btn ${tabelaAtiva==='price'?'active':''}" onclick="switchTabela('price')">Price</button>
+            <button class="tab-btn ${tabelaAtiva==='sac'?'active':''}" onclick="switchTabela('sac')">SAC</button>
+          </div>` : ''}
+        </div>
+        <div class="table-scroll" id="tabela-scroll">
+          ${renderTabela(isBoth ? (tabelaAtiva==='price' ? price.rows : sac.rows) : (isPrice ? price.rows : sac.rows), pv)}
+        </div>
+      </div>
+    `;
+
+    // Chart
+    const labels = [];
+    const dataPrice = [], dataSac = [];
+    const step = n <= 60 ? 1 : Math.ceil(n / 60);
+    for (let i = 0; i < price.rows.length; i += step) {
+      labels.push('Mês ' + price.rows[i].mes);
+      dataPrice.push(price.rows[i].saldo);
+      dataSac.push(sac.rows[i].saldo);
+    }
+
+    const ctx = document.getElementById('meuChart').getContext('2d');
+    if (chartInstance) chartInstance.destroy();
+    const datasets = [];
+    if (isBoth || isPrice) datasets.push({ label:'Price', data: dataPrice, borderColor:'#C9A84C', backgroundColor:'rgba(201,168,76,0.06)', fill:true, tension:0.3, borderWidth:2, pointRadius:0 });
+    if (isBoth || isSac) datasets.push({ label:'SAC', data: dataSac, borderColor:'#4CAF82', backgroundColor:'rgba(76,175,130,0.06)', fill:true, tension:0.3, borderWidth:2, pointRadius:0 });
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { display:false },
+          tooltip: {
+            backgroundColor:'#0f2444', borderColor:'rgba(201,168,76,0.3)', borderWidth:1,
+            titleColor:'#e2c47a', bodyColor:'rgba(245,240,232,0.7)', padding:12,
+            callbacks: { label: c => `${c.dataset.label}: ${fmtS(c.parsed.y)}` }
+          }
+        },
+        scales: {
+          x: { grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'rgba(245,240,232,0.35)', font:{size:10}, maxTicksLimit:10 } },
+          y: { grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{ color:'rgba(245,240,232,0.35)', font:{size:10}, callback: v => fmtS(v) } }
+        }
+      }
+    });
+  }
+
+  function renderCompare(price, sac, cetPrice, cetSac, pv, n, tac, seguro, totalPagoPrice, totalPagoSac, difTotal) {
+    return `
+      <div class="kpi-section-title">Comparativo Price × SAC</div>
+      <div class="kpi-compare">
+        <div class="kpi-block">
+          <div class="kpi-block-title" style="color:#C9A84C">Price — Parcela Fixa</div>
+          <div class="kpi-row"><span class="kpi-row-label">Parcela mensal</span><span class="kpi-row-value gold">${fmt(price.pmt)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">Total de juros</span><span class="kpi-row-value red">${fmt(price.totalJuros)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">Total pago</span><span class="kpi-row-value">${fmt(totalPagoPrice)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">CET mensal</span><span class="kpi-row-value">${pct(cetPrice.cetMensal)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">CET anual</span><span class="kpi-row-value">${pct(cetPrice.cetAnual)}</span></div>
+        </div>
+        <div class="kpi-block">
+          <div class="kpi-block-title" style="color:#4CAF82">SAC — Parcela Decrescente</div>
+          <div class="kpi-row"><span class="kpi-row-label">1ª parcela</span><span class="kpi-row-value">${fmt(sac.pmtInicial)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">Última parcela</span><span class="kpi-row-value green">${fmt(sac.pmtFinal)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">Total de juros</span><span class="kpi-row-value red">${fmt(sac.totalJuros)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">Total pago</span><span class="kpi-row-value">${fmt(totalPagoSac)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">CET mensal</span><span class="kpi-row-value">${pct(cetSac.cetMensal)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">CET anual</span><span class="kpi-row-value">${pct(cetSac.cetAnual)}</span></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:14px 18px;background:rgba(76,175,130,0.07);border:1px solid rgba(76,175,130,0.18);border-radius:3px;font-size:13px;color:rgba(245,240,232,0.85)">
+        Optando pelo SAC, você economiza <strong style="color:#4CAF82">${fmt(difTotal)}</strong> em juros ao longo do contrato.
+      </div>
+    `;
+  }
+
+  function renderSingle(data, cet, isPrice, pv, n, tac, seguro) {
+    const totalComEncargos = data.totalPago + tac + seguro * n;
+    return `
+      <div class="kpi-single">
+        <div class="kpi-card-sm">
+          <div class="kpi-label">${isPrice ? 'Parcela mensal' : '1ª parcela'}</div>
+          <div class="kpi-value gold">${fmt(isPrice ? data.pmt : data.pmtInicial)}</div>
+          ${!isPrice ? `<div class="kpi-sub">Última: ${fmt(data.pmtFinal)}</div>` : '<div class="kpi-sub">Fixa durante todo o contrato</div>'}
+        </div>
+        <div class="kpi-card-sm">
+          <div class="kpi-label">Total de juros</div>
+          <div class="kpi-value" style="color:var(--red)">${fmt(data.totalJuros)}</div>
+          <div class="kpi-sub">${pct(data.totalJuros / pv * 100)} do valor financiado</div>
+        </div>
+        <div class="kpi-card-sm">
+          <div class="kpi-label">Total pago</div>
+          <div class="kpi-value">${fmt(totalComEncargos)}</div>
+          <div class="kpi-sub">Incluindo encargos</div>
+        </div>
+        <div class="kpi-card-sm">
+          <div class="kpi-label">CET mensal</div>
+          <div class="kpi-value">${pct(cet.cetMensal)}</div>
+          <div class="kpi-sub">Custo Efetivo Total</div>
+        </div>
+        <div class="kpi-card-sm">
+          <div class="kpi-label">CET anual</div>
+          <div class="kpi-value">${pct(cet.cetAnual)}</div>
+          <div class="kpi-sub">Taxa real do contrato</div>
+        </div>
+        <div class="kpi-card-sm">
+          <div class="kpi-label">Custo dos juros</div>
+          <div class="kpi-value" style="color:var(--red)">${pct((totalComEncargos/pv - 1)*100)}</div>
+          <div class="kpi-sub">Sobre o valor financiado</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTabela(rows, pv) {
+    return `<table>
+      <thead><tr>
+        <th>Mês</th>
+        <th>Parcela</th>
+        <th>Juros</th>
+        <th>Amortização</th>
+        <th>Saldo devedor</th>
+        <th>% Quitado</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.mes}</td>
+            <td class="gold">${fmt(r.parcela)}</td>
+            <td class="red">${fmt(r.juros)}</td>
+            <td class="green">${fmt(r.amort)}</td>
+            <td>${fmt(r.saldo)}</td>
+            <td>${pct((1 - r.saldo/pv)*100)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  function switchTabela(tipo) {
+    tabelaAtiva = tipo;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.textContent === tipo.toUpperCase()));
+    calcular();
+  }
+
+  function gerarInsight(price, sac, cetPrice, cetSac, pv, n, isBoth, isPrice, difTotal, tac, seguro) {
+    if (isBoth) {
+      const pctDif = (difTotal / price.totalJuros * 100).toFixed(0);
+      return `No SAC, as primeiras parcelas são mais altas, mas você amortiza mais capital desde o início. Resultado: <strong>economia de ${fmt(difTotal)}</strong> em juros — ${pctDif}% a menos que no Price. Se o seu orçamento comportar a primeira parcela do SAC (${fmt(sac.pmtInicial)}), essa costuma ser a escolha mais inteligente a longo prazo.`;
+    }
+    const total = isPrice ? price.totalPago + tac + seguro*n : sac.totalPago + tac + seguro*n;
+    const juros = isPrice ? price.totalJuros : sac.totalJuros;
+    const cet = isPrice ? cetPrice : cetSac;
+    const pctJuros = (juros/pv*100).toFixed(0);
+    return `Ao final do contrato, você terá pago <strong>${fmt(juros)}</strong> só em juros — ${pctJuros}% do valor que foi financiado. O CET anual de <strong>${pct(cet.cetAnual)}</strong> é a taxa que o banco realmente cobra, incluindo todos os encargos. Sempre exija o CET na proposta antes de assinar.`;
+  }
+
+  // Init
+  syncLbl('valor','lbl-valor','currency');
+  syncLbl('taxa','lbl-taxa','percent-m');
+  syncLbl('prazo','lbl-prazo','meses');
+  window.addEventListener('load', () => calcular());
+</script>
+</body>
+</html>

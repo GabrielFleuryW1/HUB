@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Aportes · Gabriel Fleury</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #112850;
+    --navy-card: #0f2444;
+    --navy-light: #1a3a66;
+    --gold: #C9A84C;
+    --gold-light: #e2c47a;
+    --cream: #F5F0E8;
+    --text-muted: rgba(245,240,232,0.55);
+    --green: #4CAF82;
+    --green-soft: rgba(76,175,130,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid rgba(201,168,76,0.18);
+    background: rgba(11,31,58,0.97);
+  }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; }
+  .logo-sub { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 300; }
+  .nav-back { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--gold); }
+
+  /* HERO */
+  .page-hero {
+    padding: 56px 48px 40px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    background: linear-gradient(180deg, rgba(26,58,102,0.3) 0%, transparent 100%);
+  }
+  .breadcrumb { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; opacity: 0.8; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px); font-weight: 300; line-height: 1.1; margin-bottom: 12px; }
+  .page-title em { font-style: italic; color: var(--gold-light); }
+  .page-desc { font-size: 14px; color: var(--text-muted); font-weight: 300; max-width: 560px; line-height: 1.65; }
+
+  /* LAYOUT */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 180px);
+  }
+
+  /* INPUTS PANEL */
+  .inputs-panel {
+    background: var(--navy-card);
+    border-right: 1px solid rgba(201,168,76,0.12);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .panel-section-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+    margin-bottom: 4px;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 7px; }
+
+  .field-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .field-value-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--gold-light);
+    font-weight: 400;
+  }
+
+  .input-wrapper { position: relative; }
+
+  .input-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  input[type="number"], input[type="text"] {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 3px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 11px 14px 11px 36px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: rgba(201,168,76,0.5); background: rgba(255,255,255,0.07); }
+
+  input.no-prefix { padding-left: 14px; }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 3px;
+    background: rgba(201,168,76,0.2);
+    border-radius: 2px;
+    outline: none;
+    margin-top: 6px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--gold);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .radio-btn {
+    flex: 1;
+    min-width: 80px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 3px;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 9px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .radio-btn:hover { border-color: rgba(201,168,76,0.3); color: var(--cream); }
+  .radio-btn.active { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold-light); }
+
+  .calc-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 8px;
+  }
+  .calc-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* RESULTS PANEL */
+  .results-panel {
+    padding: 40px 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .kpi-card {
+    background: var(--navy-card);
+    border: 1px solid rgba(201,168,76,0.1);
+    border-radius: 4px;
+    padding: 24px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .kpi-card:hover { border-color: rgba(201,168,76,0.25); }
+  .kpi-card.highlight { border-color: rgba(201,168,76,0.3); background: rgba(201,168,76,0.05); }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: transparent; transition: background 0.2s; }
+  .kpi-card.highlight::before { background: var(--gold); }
+
+  .kpi-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+  .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; line-height: 1; color: var(--cream); }
+  .kpi-value.gold { color: var(--gold-light); }
+  .kpi-value.green { color: var(--green); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; font-weight: 300; }
+
+  /* CHART */
+  .chart-wrapper {
+    background: var(--navy-card);
+    border: 1px solid rgba(201,168,76,0.1);
+    border-radius: 4px;
+    padding: 28px 28px 20px;
+  }
+  .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .chart-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; }
+  .chart-legend { display: flex; gap: 20px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  canvas { width: 100% !important; max-height: 260px; }
+
+  /* BREAKDOWN TABLE */
+  .breakdown-wrapper {
+    background: var(--navy-card);
+    border: 1px solid rgba(201,168,76,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .breakdown-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .breakdown-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; }
+
+  .table-scroll { max-height: 260px; overflow-y: auto; }
+  .table-scroll::-webkit-scrollbar { width: 4px; }
+  .table-scroll::-webkit-scrollbar-track { background: transparent; }
+  .table-scroll::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 12px 20px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); text-align: right; background: rgba(255,255,255,0.02); position: sticky; top: 0; }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(201,168,76,0.04); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 11px 20px; font-size: 13px; text-align: right; color: var(--text-muted); }
+  tbody td:first-child { text-align: left; color: var(--cream); font-weight: 400; }
+  tbody td.positive { color: var(--green); }
+  tbody td.gold { color: var(--gold-light); font-weight: 500; }
+
+  /* INSIGHT BOX */
+  .insight-box {
+    background: rgba(76,175,130,0.08);
+    border: 1px solid rgba(76,175,130,0.2);
+    border-radius: 4px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .insight-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .insight-text { font-size: 14px; line-height: 1.65; color: rgba(245,240,232,0.8); font-weight: 300; }
+  .insight-text strong { color: var(--cream); font-weight: 500; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 80px 40px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .empty-icon { font-size: 48px; opacity: 0.4; }
+  .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: var(--cream); opacity: 0.5; }
+  .empty-desc { font-size: 13px; font-weight: 300; max-width: 320px; line-height: 1.6; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeIn 0.4s ease both; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <div class="logo-name">Gabriel Fleury</div>
+    <div class="logo-sub">Consultoria Financeira</div>
+  </div>
+  <a href="../index.html" class="nav-back">← Todas as ferramentas</a>
+</nav>
+
+<div class="page-hero">
+  <div class="breadcrumb">Ferramentas · Investimentos</div>
+  <h1 class="page-title">Simulador de <em>Aportes Mensais</em></h1>
+  <p class="page-desc">Veja como seu patrimônio cresce ao longo do tempo com juros compostos e aportes regulares. Descubra o impacto real de investir todos os meses.</p>
+</div>
+
+<div class="main-layout">
+
+  <!-- INPUTS -->
+  <aside class="inputs-panel">
+    <div class="panel-section-title">Parâmetros da simulação</div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Aporte inicial (capital)</span>
+        <span class="field-value-display" id="lbl-inicial">R$ 0</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix">R$</span>
+        <input type="number" id="inicial" value="0" min="0" step="100" oninput="syncLabel('inicial','lbl-inicial','currency')">
+      </div>
+      <input type="range" id="range-inicial" min="0" max="100000" step="500" value="0"
+        oninput="document.getElementById('inicial').value=this.value; syncLabel('inicial','lbl-inicial','currency')">
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Aporte mensal</span>
+        <span class="field-value-display" id="lbl-mensal">R$ 500</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix">R$</span>
+        <input type="number" id="mensal" value="500" min="0" step="50" oninput="syncLabel('mensal','lbl-mensal','currency')">
+      </div>
+      <input type="range" id="range-mensal" min="0" max="10000" step="50" value="500"
+        oninput="document.getElementById('mensal').value=this.value; syncLabel('mensal','lbl-mensal','currency')">
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Taxa de juros anual</span>
+        <span class="field-value-display" id="lbl-taxa">10,00% a.a.</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix">%</span>
+        <input type="number" id="taxa" value="10" min="0.1" max="50" step="0.1" class="no-prefix" style="padding-left:36px" oninput="syncLabel('taxa','lbl-taxa','percent')">
+      </div>
+      <input type="range" id="range-taxa" min="1" max="30" step="0.1" value="10"
+        oninput="document.getElementById('taxa').value=this.value; syncLabel('taxa','lbl-taxa','percent')">
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;font-weight:300;">
+        Digite a taxa da aplicação que deseja simular (ex: CDB, Tesouro, Fundos)
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">
+        <span>Período</span>
+        <span class="field-value-display" id="lbl-periodo">10 anos</span>
+      </div>
+      <div class="input-wrapper">
+        <span class="input-prefix" style="font-size:11px">anos</span>
+        <input type="number" id="periodo" value="10" min="1" max="50" step="1" class="no-prefix" style="padding-left:52px" oninput="syncLabel('periodo','lbl-periodo','years')">
+      </div>
+      <input type="range" id="range-periodo" min="1" max="40" step="1" value="10"
+        oninput="document.getElementById('periodo').value=this.value; syncLabel('periodo','lbl-periodo','years')">
+      <div class="radio-group">
+        <button class="radio-btn" onclick="setPeriodo(5)">5 anos</button>
+        <button class="radio-btn active" onclick="setPeriodo(10)">10 anos</button>
+        <button class="radio-btn" onclick="setPeriodo(20)">20 anos</button>
+        <button class="radio-btn" onclick="setPeriodo(30)">30 anos</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>Incluir inflação estimada?</span></div>
+      <div class="radio-group">
+        <button class="radio-btn" id="btn-inflacao-nao" onclick="setInflacao(false)" style="flex:none;width:auto;padding:9px 18px">Não</button>
+        <button class="radio-btn active" id="btn-inflacao-sim" onclick="setInflacao(true)" style="flex:none;width:auto;padding:9px 18px">Sim (4% a.a.)</button>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcular()">Simular agora</button>
+  </aside>
+
+  <!-- RESULTS -->
+  <main class="results-panel" id="results-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">📈</div>
+      <div class="empty-title">Pronto para simular</div>
+      <div class="empty-desc">Ajuste os parâmetros ao lado e clique em "Simular agora" para ver sua projeção completa.</div>
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let chartInstance = null;
+  let usarInflacao = true;
+
+  function fmt(v) {
+    return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
+  }
+
+  function fmtShort(v) {
+    if (v >= 1e9) return 'R$ ' + (v/1e9).toFixed(2).replace('.',',') + 'B';
+    if (v >= 1e6) return 'R$ ' + (v/1e6).toFixed(2).replace('.',',') + 'M';
+    if (v >= 1e3) return 'R$ ' + (v/1e3).toFixed(1).replace('.',',') + 'K';
+    return fmt(v);
+  }
+
+  function syncLabel(inputId, labelId, type) {
+    const v = parseFloat(document.getElementById(inputId).value) || 0;
+    const rangeId = 'range-' + inputId;
+    const range = document.getElementById(rangeId);
+    if (range) range.value = v;
+    const label = document.getElementById(labelId);
+    if (type === 'currency') label.textContent = fmt(v);
+    else if (type === 'percent') label.textContent = v.toFixed(2).replace('.',',') + '% a.a.';
+    else if (type === 'years') label.textContent = v + ' ano' + (v !== 1 ? 's' : '');
+  }
+
+  function setPeriodo(v) {
+    document.getElementById('periodo').value = v;
+    document.getElementById('range-periodo').value = v;
+    syncLabel('periodo', 'lbl-periodo', 'years');
+    document.querySelectorAll('.radio-btn').forEach(b => {
+      if (['5 anos','10 anos','20 anos','30 anos'].includes(b.textContent)) b.classList.remove('active');
+    });
+    event.target.classList.add('active');
+  }
+
+  function setInflacao(sim) {
+    usarInflacao = sim;
+    document.getElementById('btn-inflacao-sim').classList.toggle('active', sim);
+    document.getElementById('btn-inflacao-nao').classList.toggle('active', !sim);
+  }
+
+  function calcular() {
+    const inicial = parseFloat(document.getElementById('inicial').value) || 0;
+    const mensal = parseFloat(document.getElementById('mensal').value) || 0;
+    const taxaAnual = parseFloat(document.getElementById('taxa').value) || 0;
+    const anos = parseInt(document.getElementById('periodo').value) || 0;
+    const inflacaoAnual = usarInflacao ? 4 : 0;
+
+    if (anos < 1 || (inicial === 0 && mensal === 0)) {
+      alert('Preencha ao menos um valor inicial ou aporte mensal e o período.');
+      return;
+    }
+
+    const taxaMensal = Math.pow(1 + taxaAnual/100, 1/12) - 1;
+    const inflacaoMensal = Math.pow(1 + inflacaoAnual/100, 1/12) - 1;
+    const taxaRealMensal = usarInflacao ? ((1 + taxaMensal)/(1 + inflacaoMensal)) - 1 : taxaMensal;
+
+    let saldo = inicial;
+    let totalAportado = inicial;
+    const meses = anos * 12;
+
+    const labels = ['Hoje'];
+    const seriePatrimonio = [inicial];
+    const serieAportado = [inicial];
+    const serieJuros = [0];
+    const tabelaAnos = [];
+
+    for (let m = 1; m <= meses; m++) {
+      saldo = saldo * (1 + taxaMensal) + mensal;
+      totalAportado += mensal;
+      const jurosAcum = saldo - totalAportado;
+
+      if (m % 12 === 0) {
+        const ano = m / 12;
+        labels.push(ano + 'º ano');
+        seriePatrimonio.push(saldo);
+        serieAportado.push(totalAportado);
+        serieJuros.push(jurosAcum);
+
+        const saldoReal = usarInflacao ? saldo / Math.pow(1 + inflacaoAnual/100, ano) : saldo;
+        tabelaAnos.push({ ano, patrimonio: saldo, aportado: totalAportado, juros: jurosAcum, real: saldoReal });
+      }
+    }
+
+    const patrimonioFinal = saldo;
+    const totalInvestido = totalAportado;
+    const totalJuros = patrimonioFinal - totalInvestido;
+    const multiplicador = totalInvestido > 0 ? patrimonioFinal / totalInvestido : 0;
+    const patrimonioReal = usarInflacao ? patrimonioFinal / Math.pow(1 + inflacaoAnual/100, anos) : patrimonioFinal;
+
+    renderResults(patrimonioFinal, totalInvestido, totalJuros, multiplicador, patrimonioReal, labels, seriePatrimonio, serieAportado, serieJuros, tabelaAnos, anos, mensal, taxaAnual);
+  }
+
+  function renderResults(patrimonioFinal, totalInvestido, totalJuros, multiplicador, patrimonioReal, labels, seriePatrimonio, serieAportado, serieJuros, tabelaAnos, anos, mensal, taxa) {
+    const panel = document.getElementById('results-panel');
+
+    const rendaMensal = patrimonioFinal * (Math.pow(1 + taxa/100, 1/12) - 1);
+
+    panel.innerHTML = `
+      <div class="kpi-grid animate-in">
+        <div class="kpi-card highlight">
+          <div class="kpi-label">Patrimônio final</div>
+          <div class="kpi-value gold">${fmtShort(patrimonioFinal)}</div>
+          <div class="kpi-sub">${multiplicador.toFixed(1)}× o valor investido</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Total investido</div>
+          <div class="kpi-value">${fmtShort(totalInvestido)}</div>
+          <div class="kpi-sub">Capital próprio</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Juros gerados</div>
+          <div class="kpi-value green">${fmtShort(totalJuros)}</div>
+          <div class="kpi-sub">${(totalJuros/patrimonioFinal*100).toFixed(1)}% do patrimônio</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Renda mensal estimada</div>
+          <div class="kpi-value gold">${fmtShort(rendaMensal)}</div>
+          <div class="kpi-sub">Vivendo dos juros</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Poder de compra real</div>
+          <div class="kpi-value">${fmtShort(patrimonioReal)}</div>
+          <div class="kpi-sub">${usarInflacao ? 'Corrigido pela inflação (4% a.a.)' : 'Sem desconto de inflação'}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Período</div>
+          <div class="kpi-value">${anos}</div>
+          <div class="kpi-sub">ano${anos !== 1 ? 's' : ''} de aportes mensais</div>
+        </div>
+      </div>
+
+      <div class="insight-box animate-in" style="animation-delay:0.1s">
+        <div class="insight-icon">💡</div>
+        <div class="insight-text">
+          ${gerarInsight(patrimonioFinal, totalInvestido, totalJuros, multiplicador, anos, mensal, patrimonioReal)}
+        </div>
+      </div>
+
+      <div class="chart-wrapper animate-in" style="animation-delay:0.15s">
+        <div class="chart-header">
+          <div class="chart-title">Evolução do Patrimônio</div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#C9A84C"></div>Patrimônio total</div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(201,168,76,0.3)"></div>Total investido</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4CAF82"></div>Juros acumulados</div>
+          </div>
+        </div>
+        <canvas id="meuChart"></canvas>
+      </div>
+
+      <div class="breakdown-wrapper animate-in" style="animation-delay:0.2s">
+        <div class="breakdown-header">
+          <div class="breakdown-title">Projeção por ano</div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Ano</th>
+                <th>Total investido</th>
+                <th>Juros gerados</th>
+                <th>Patrimônio</th>
+                ${usarInflacao ? '<th>Valor real</th>' : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${tabelaAnos.map(r => `
+                <tr>
+                  <td>${r.ano}º ano</td>
+                  <td>${fmtShort(r.aportado)}</td>
+                  <td class="positive">${fmtShort(r.juros)}</td>
+                  <td class="gold">${fmtShort(r.patrimonio)}</td>
+                  ${usarInflacao ? `<td>${fmtShort(r.real)}</td>` : ''}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    const ctx = document.getElementById('meuChart').getContext('2d');
+    if (chartInstance) chartInstance.destroy();
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Patrimônio total',
+            data: seriePatrimonio,
+            borderColor: '#C9A84C',
+            backgroundColor: 'rgba(201,168,76,0.08)',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#C9A84C',
+          },
+          {
+            label: 'Total investido',
+            data: serieAportado,
+            borderColor: 'rgba(201,168,76,0.4)',
+            backgroundColor: 'transparent',
+            fill: false,
+            tension: 0.1,
+            borderWidth: 1.5,
+            borderDash: [6, 4],
+            pointRadius: 0,
+          },
+          {
+            label: 'Juros acumulados',
+            data: serieJuros,
+            borderColor: '#4CAF82',
+            backgroundColor: 'rgba(76,175,130,0.06)',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 1.5,
+            pointRadius: 0,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f2444',
+            borderColor: 'rgba(201,168,76,0.3)',
+            borderWidth: 1,
+            titleColor: '#e2c47a',
+            bodyColor: 'rgba(245,240,232,0.7)',
+            padding: 12,
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${fmtShort(ctx.parsed.y)}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: 'rgba(245,240,232,0.4)', font: { size: 11 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: 'rgba(245,240,232,0.4)',
+              font: { size: 11 },
+              callback: v => fmtShort(v)
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function gerarInsight(patrimonioFinal, totalInvestido, totalJuros, multiplicador, anos, mensal, patrimonioReal) {
+    const pct = (totalJuros / patrimonioFinal * 100).toFixed(0);
+    if (multiplicador >= 3) {
+      return `Os juros compostos fizeram um trabalho impressionante: <strong>${pct}% do seu patrimônio final veio do rendimento</strong>, não dos seus aportes. Em ${anos} anos, cada R$ 1,00 investido se transformou em R$ ${multiplicador.toFixed(2).replace('.',',')}. Esse é o efeito do tempo sobre os juros compostos.`;
+    } else if (multiplicador >= 1.5) {
+      return `Em ${anos} anos, os juros gerados representam <strong>${pct}% do patrimônio final</strong> — o dinheiro trabalhou junto com você. Quanto mais tempo, mais expressivo esse número fica. Considere aumentar o prazo ou os aportes para acelerar.`;
+    } else {
+      return `Com aportes consistentes de ${new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(mensal)} por mês, você acumularia <strong>${fmtShort(patrimonioFinal)}</strong> em ${anos} anos. Os juros ainda representam ${pct}% do patrimônio — com um prazo maior, esse número cresce exponencialmente.`;
+    }
+  }
+
+  // Inicializar displays
+  syncLabel('inicial', 'lbl-inicial', 'currency');
+  syncLabel('mensal', 'lbl-mensal', 'currency');
+  syncLabel('taxa', 'lbl-taxa', 'percent');
+  syncLabel('periodo', 'lbl-periodo', 'years');
+
+  // Calcular automaticamente ao carregar
+  window.addEventListener('load', () => calcular());
+</script>
+</body>
+</html>
