@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bola de Neve × Avalanche · Gabriel Fleury</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #112850;
+    --navy-card: #0f2444;
+    --navy-light: #1a3a66;
+    --gold: #C9A84C;
+    --gold-light: #e2c47a;
+    --cream: #F5F0E8;
+    --text-muted: rgba(245,240,232,0.55);
+    --red: #E07070;
+    --green: #4CAF82;
+    --blue: #5B9BD5;
+    --purple: #9B7FD4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--cream); min-height: 100vh; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid rgba(201,168,76,0.18);
+    background: rgba(11,31,58,0.97);
+  }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; }
+  .logo-sub { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 300; }
+  .nav-back { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--gold); }
+
+  .page-hero {
+    padding: 52px 48px 36px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    background: linear-gradient(180deg, rgba(26,58,102,0.3) 0%, transparent 100%);
+  }
+  .breadcrumb { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; opacity: 0.8; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 48px); font-weight: 300; line-height: 1.1; margin-bottom: 10px; }
+  .page-title em { font-style: italic; color: var(--gold-light); }
+  .page-desc { font-size: 14px; color: var(--text-muted); font-weight: 300; max-width: 620px; line-height: 1.65; }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 44px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* EXPLICAÇÃO */
+  .metodos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .metodo-card { padding: 20px 22px; border-radius: 4px; border: 1px solid; }
+  .metodo-card.neve { background: rgba(91,155,213,0.07); border-color: rgba(91,155,213,0.25); }
+  .metodo-card.avalanche { background: rgba(224,112,112,0.07); border-color: rgba(224,112,112,0.25); }
+  .metodo-nome { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px; }
+  .metodo-nome.blue { color: var(--blue); }
+  .metodo-nome.red { color: var(--red); }
+  .metodo-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
+
+  /* DÍVIDAS */
+  .card { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 24px 28px; }
+  .card-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(201,168,76,0.1); display: flex; justify-content: space-between; align-items: center; }
+
+  .dividas-lista { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+  .divida-row {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 10px; align-items: center;
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(201,168,76,0.08);
+    border-radius: 3px; padding: 12px 14px;
+  }
+  .divida-header {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 10px; padding: 0 14px 8px;
+  }
+  .divida-header span { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+
+  .inp {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 2px; color: var(--cream); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; padding: 7px 10px; outline: none; transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  .inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .inp:focus { border-color: rgba(201,168,76,0.4); }
+  .inp-nome { font-size: 13px; }
+
+  .btn-remove {
+    background: rgba(224,112,112,0.1); border: 1px solid rgba(224,112,112,0.2);
+    color: var(--red); border-radius: 2px; padding: 6px 10px; cursor: pointer;
+    font-size: 14px; transition: background 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-remove:hover { background: rgba(224,112,112,0.2); }
+
+  .btn-add {
+    background: transparent; border: 1px dashed rgba(201,168,76,0.25);
+    color: var(--text-muted); border-radius: 3px; padding: 11px;
+    cursor: pointer; font-size: 12px; letter-spacing: 0.1em; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s; width: 100%; text-align: center;
+  }
+  .btn-add:hover { border-color: rgba(201,168,76,0.5); color: var(--gold); }
+
+  /* PAGAMENTO EXTRA */
+  .extra-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+  .field-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; display: flex; justify-content: space-between; }
+  .field-val { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--gold-light); }
+  .field-hint { font-size: 11px; color: var(--text-muted); font-weight: 300; }
+  .input-wrap { position: relative; }
+  .inp-prefix { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none; }
+  input[type="number"] {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 3px; color: var(--cream); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 10px 12px 10px 32px; outline: none; transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: rgba(201,168,76,0.5); }
+
+  .calc-btn {
+    width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 15px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; border-radius: 3px;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .calc-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* RESULTADOS */
+  .resultado { display: none; flex-direction: column; gap: 20px; }
+  .resultado.visivel { display: flex; }
+
+  .veredicto { border-radius: 4px; padding: 24px 28px; display: flex; align-items: center; gap: 20px; }
+  .veredicto.neve { background: rgba(91,155,213,0.08); border: 1px solid rgba(91,155,213,0.25); }
+  .veredicto.avalanche { background: rgba(224,112,112,0.08); border: 1px solid rgba(224,112,112,0.25); }
+  .veredicto.empate { background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.2); }
+  .veredicto-icon { font-size: 40px; flex-shrink: 0; }
+  .veredicto-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .veredicto-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; line-height: 1.2; }
+  .veredicto-sub { font-size: 13px; color: var(--text-muted); margin-top: 7px; font-weight: 300; line-height: 1.6; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi-card { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 16px 18px; }
+  .kpi-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px; }
+  .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; line-height: 1; }
+  .kpi-value.gold { color: var(--gold-light); }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.blue { color: var(--blue); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* TIMELINE */
+  .timeline-wrapper { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; overflow: hidden; }
+  .timeline-header { padding: 16px 22px; border-bottom: 1px solid rgba(201,168,76,0.1); display: flex; justify-content: space-between; align-items: center; }
+  .timeline-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; }
+  .legend { display: flex; gap: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  canvas { width: 100% !important; max-height: 240px; padding: 16px; }
+
+  /* ORDEM QUITAÇÃO */
+  .ordem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ordem-col { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; overflow: hidden; }
+  .ordem-col-title { padding: 14px 18px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .ordem-col-title.blue { color: var(--blue); background: rgba(91,155,213,0.05); }
+  .ordem-col-title.red { color: var(--red); background: rgba(224,112,112,0.05); }
+  .ordem-item { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .ordem-item:last-child { border-bottom: none; }
+  .ordem-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+  .ordem-num.blue { background: rgba(91,155,213,0.15); color: var(--blue); }
+  .ordem-num.red { background: rgba(224,112,112,0.15); color: var(--red); }
+  .ordem-info { flex: 1; }
+  .ordem-nome { font-size: 13px; color: var(--cream); }
+  .ordem-detalhe { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .ordem-mes { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--text-muted); }
+
+  .insight-box { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.15); border-radius: 4px; padding: 18px 22px; display: flex; gap: 14px; }
+  .insight-icon { font-size: 20px; flex-shrink: 0; }
+  .insight-text { font-size: 13px; line-height: 1.7; color: rgba(245,240,232,0.82); font-weight: 300; }
+  .insight-text strong { color: var(--cream); font-weight: 500; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeIn 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <div class="logo-name">Gabriel Fleury</div>
+    <div class="logo-sub">Consultoria Financeira</div>
+  </div>
+  <a href="../index.html" class="nav-back">← Todas as ferramentas</a>
+</nav>
+
+<div class="page-hero">
+  <div class="breadcrumb">Ferramentas · Dívidas</div>
+  <h1 class="page-title">Bola de Neve <em>× Avalanche</em></h1>
+  <p class="page-desc">Compare as duas estratégias de quitação de dívidas e descubra qual te tira do vermelho mais rápido e com menor custo total de juros.</p>
+</div>
+
+<div class="container">
+
+  <!-- EXPLICAÇÃO -->
+  <div class="metodos-grid">
+    <div class="metodo-card neve">
+      <div class="metodo-nome blue">❄️ Bola de Neve</div>
+      <div class="metodo-desc">Quita primeiro a <strong style="color:var(--cream)">menor dívida</strong>, independente dos juros. Gera vitórias rápidas e motivação para continuar. Psicologicamente mais poderoso.</div>
+    </div>
+    <div class="metodo-card avalanche">
+      <div class="metodo-nome red">🌊 Avalanche</div>
+      <div class="metodo-desc">Quita primeiro a dívida com <strong style="color:var(--cream)">maior taxa de juros</strong>. Matematicamente mais eficiente — você paga menos juros no total.</div>
+    </div>
+  </div>
+
+  <!-- DÍVIDAS -->
+  <div class="card">
+    <div class="card-title">
+      <span>Suas dívidas</span>
+      <span style="color:var(--text-muted);font-size:9px;letter-spacing:0.1em">Adicione até 8 dívidas</span>
+    </div>
+
+    <div class="divida-header">
+      <span>Nome</span>
+      <span>Saldo devedor</span>
+      <span>Taxa mensal</span>
+      <span>Parcela mín.</span>
+      <span></span>
+    </div>
+
+    <div class="dividas-lista" id="dividas-lista"></div>
+
+    <button class="btn-add" onclick="adicionarDivida()">+ Adicionar dívida</button>
+  </div>
+
+  <!-- PAGAMENTO EXTRA -->
+  <div class="card">
+    <div class="card-title">Pagamento mensal total disponível</div>
+    <div class="extra-row">
+      <div class="field-group">
+        <div class="field-label">
+          <span>Quanto pode pagar por mês no total?</span>
+          <span class="field-val" id="lbl-total">R$ 0</span>
+        </div>
+        <div class="input-wrap">
+          <span class="inp-prefix">R$</span>
+          <input type="number" id="pagamentoTotal" value="0" min="0" step="50"
+            oninput="document.getElementById('lbl-total').textContent=fmt(parseFloat(this.value)||0)">
+        </div>
+        <div class="field-hint">Deve ser maior que a soma das parcelas mínimas. O excedente é aplicado na estratégia escolhida.</div>
+      </div>
+      <div class="field-group">
+        <div id="resumo-minimo" style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.1);border-radius:3px;height:100%;display:flex;flex-direction:column;gap:8px;justify-content:center">
+          <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Resumo atual</div>
+          <div style="font-size:13px;color:var(--text-muted)">Total em dívidas: <span id="res-total-dividas" style="color:var(--cream)">—</span></div>
+          <div style="font-size:13px;color:var(--text-muted)">Mínimo mensal: <span id="res-minimo" style="color:var(--red)">—</span></div>
+          <div style="font-size:13px;color:var(--text-muted)">Excedente disponível: <span id="res-excedente" style="color:var(--green)">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calcular()">Comparar estratégias</button>
+
+  <!-- RESULTADO -->
+  <div class="resultado" id="resultado">
+    <div id="veredicto-box" class="veredicto animate-in"></div>
+
+    <div class="kpi-grid animate-in" style="animation-delay:0.05s" id="kpi-grid"></div>
+
+    <div class="timeline-wrapper animate-in" style="animation-delay:0.1s">
+      <div class="timeline-header">
+        <div class="timeline-title">Saldo total ao longo do tempo</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Bola de Neve</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Avalanche</div>
+        </div>
+      </div>
+      <canvas id="meuChart"></canvas>
+    </div>
+
+    <div class="ordem-grid animate-in" style="animation-delay:0.15s" id="ordem-grid"></div>
+
+    <div class="insight-box animate-in" style="animation-delay:0.2s" id="insight-box"></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let chartInst = null;
+  let dividas = [];
+  let proxId = 1;
+
+  function fmt(v) { return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL', minimumFractionDigits:2 }); }
+  function fmtS(v) {
+    if (v >= 1e6) return 'R$ ' + (v/1e6).toFixed(2).replace('.',',') + 'M';
+    if (v >= 1e3) return 'R$ ' + (v/1e3).toFixed(1).replace('.',',') + 'K';
+    return fmt(v);
+  }
+
+  function adicionarDivida(nome='', saldo=0, taxa=0, parcela=0) {
+    if (dividas.length >= 8) { alert('Máximo de 8 dívidas.'); return; }
+    const id = proxId++;
+    dividas.push({ id, nome, saldo, taxa, parcela });
+    renderLista();
+  }
+
+  function removerDivida(id) {
+    dividas = dividas.filter(d => d.id !== id);
+    renderLista();
+  }
+
+  function renderLista() {
+    const lista = document.getElementById('dividas-lista');
+    lista.innerHTML = dividas.map(d => `
+      <div class="divida-row" id="row-${d.id}">
+        <input class="inp inp-nome" type="text" placeholder="Ex: Cartão Nubank"
+          value="${d.nome}" oninput="atualizarDivida(${d.id},'nome',this.value)">
+        <input class="inp" type="number" placeholder="0,00" min="0" step="100"
+          value="${d.saldo||''}" oninput="atualizarDivida(${d.id},'saldo',parseFloat(this.value)||0)">
+        <input class="inp" type="number" placeholder="% a.m." min="0" max="50" step="0.1"
+          value="${d.taxa||''}" oninput="atualizarDivida(${d.id},'taxa',parseFloat(this.value)||0)">
+        <input class="inp" type="number" placeholder="R$ mín." min="0" step="10"
+          value="${d.parcela||''}" oninput="atualizarDivida(${d.id},'parcela',parseFloat(this.value)||0)">
+        <button class="btn-remove" onclick="removerDivida(${d.id})">×</button>
+      </div>
+    `).join('');
+    atualizarResumo();
+  }
+
+  function atualizarDivida(id, campo, valor) {
+    const d = dividas.find(x => x.id === id);
+    if (d) d[campo] = valor;
+    atualizarResumo();
+  }
+
+  function atualizarResumo() {
+    const totalDividas = dividas.reduce((s,d) => s + (d.saldo||0), 0);
+    const totalMinimo = dividas.reduce((s,d) => s + (d.parcela||0), 0);
+    const pagTotal = parseFloat(document.getElementById('pagamentoTotal').value) || 0;
+    const excedente = pagTotal - totalMinimo;
+
+    document.getElementById('res-total-dividas').textContent = fmt(totalDividas);
+    document.getElementById('res-minimo').textContent = fmt(totalMinimo);
+    document.getElementById('res-excedente').textContent = fmt(Math.max(0, excedente));
+    document.getElementById('res-excedente').style.color = excedente >= 0 ? 'var(--green)' : 'var(--red)';
+  }
+
+  function simular(estrategia) {
+    // Clona dívidas
+    let ds = dividas.map(d => ({ ...d, saldoAtual: d.saldo }));
+    const pagTotal = parseFloat(document.getElementById('pagamentoTotal').value) || 0;
+
+    let mes = 0;
+    const historico = [ds.reduce((s,d) => s + d.saldoAtual, 0)]; // saldo inicial
+    let totalJuros = 0;
+    const ordemQuit = [];
+
+    while (ds.some(d => d.saldoAtual > 0.01) && mes < 600) {
+      mes++;
+
+      // Aplica juros
+      ds.forEach(d => {
+        if (d.saldoAtual > 0) {
+          const j = d.saldoAtual * (d.taxa/100);
+          totalJuros += j;
+          d.saldoAtual += j;
+        }
+      });
+
+      // Ordena conforme estratégia
+      const ativas = ds.filter(d => d.saldoAtual > 0.01);
+      if (estrategia === 'neve') {
+        ativas.sort((a,b) => a.saldoAtual - b.saldoAtual);
+      } else {
+        ativas.sort((a,b) => b.taxa - a.taxa);
+      }
+
+      // Paga mínimos
+      let disponivelExtra = pagTotal;
+      ds.forEach(d => {
+        if (d.saldoAtual > 0.01) {
+          const pag = Math.min(d.parcela, d.saldoAtual);
+          d.saldoAtual -= pag;
+          disponivelExtra -= pag;
+        }
+      });
+
+      // Aplica excedente na dívida prioritária
+      for (const d of ativas) {
+        if (disponivelExtra <= 0) break;
+        if (d.saldoAtual > 0.01) {
+          const pag = Math.min(disponivelExtra, d.saldoAtual);
+          d.saldoAtual -= pag;
+          disponivelExtra -= pag;
+        }
+      }
+
+      // Registra quitações
+      ds.forEach(d => {
+        if (d.saldoAtual <= 0.01 && !ordemQuit.find(o => o.id === d.id)) {
+          ordemQuit.push({ id: d.id, nome: d.nome, mes, taxa: d.taxa, saldoOriginal: d.saldo });
+          d.saldoAtual = 0;
+        }
+      });
+
+      historico.push(ds.reduce((s,d) => s + d.saldoAtual, 0));
+    }
+
+    return { meses: mes, totalJuros, historico, ordemQuit };
+  }
+
+  function calcular() {
+    if (dividas.length < 2) { alert('Adicione pelo menos 2 dívidas para comparar.'); return; }
+    if (dividas.some(d => !d.saldo || !d.taxa || !d.parcela)) { alert('Preencha saldo, taxa e parcela mínima de todas as dívidas.'); return; }
+
+    const pagTotal = parseFloat(document.getElementById('pagamentoTotal').value) || 0;
+    const totalMinimo = dividas.reduce((s,d) => s + d.parcela, 0);
+
+    if (pagTotal < totalMinimo) {
+      alert(`O pagamento mensal (${fmt(pagTotal)}) é menor que a soma dos mínimos (${fmt(totalMinimo)}). Aumente o valor disponível.`);
+      return;
+    }
+
+    const neve = simular('neve');
+    const aval = simular('avalanche');
+    const totalDividas = dividas.reduce((s,d) => s + d.saldo, 0);
+
+    renderResultado(neve, aval, totalDividas);
+  }
+
+  function renderResultado(neve, aval, totalDividas) {
+    document.getElementById('resultado').classList.add('visivel');
+
+    const difMeses = neve.meses - aval.meses;
+    const difJuros = neve.totalJuros - aval.totalJuros;
+    const vencedor = Math.abs(difMeses) <= 1 ? 'empate' : aval.meses < neve.meses ? 'avalanche' : 'neve';
+
+    // VEREDICTO
+    const vBox = document.getElementById('veredicto-box');
+    vBox.className = 'veredicto animate-in ' + vencedor;
+    if (vencedor === 'avalanche') {
+      vBox.innerHTML = `<div class="veredicto-icon">🌊</div><div>
+        <div class="veredicto-label">Resultado matemático</div>
+        <div class="veredicto-title">Avalanche economiza mais</div>
+        <div class="veredicto-sub">Você quita todas as dívidas <strong>${difMeses} mês${Math.abs(difMeses)!==1?'es':''} antes</strong> e paga <strong>${fmt(Math.abs(difJuros))} a menos em juros</strong> — mas as primeiras vitórias demoram mais para aparecer.</div>
+      </div>`;
+    } else if (vencedor === 'neve') {
+      vBox.innerHTML = `<div class="veredicto-icon">❄️</div><div>
+        <div class="veredicto-label">Resultado desta simulação</div>
+        <div class="veredicto-title">Bola de Neve pode ser melhor aqui</div>
+        <div class="veredicto-sub">Neste cenário as estratégias ficaram muito próximas. A Bola de Neve ganha em motivação — vitórias mais rápidas mantêm o foco durante o processo.</div>
+      </div>`;
+    } else {
+      vBox.innerHTML = `<div class="veredicto-icon">⚖️</div><div>
+        <div class="veredicto-label">Resultado desta simulação</div>
+        <div class="veredicto-title">Estratégias quase idênticas aqui</div>
+        <div class="veredicto-sub">A diferença é mínima neste cenário. Escolha a que você consegue manter: <strong>Avalanche</strong> para quem é disciplinado com números, <strong>Bola de Neve</strong> para quem precisa de motivação.</div>
+      </div>`;
+    }
+
+    // KPIs
+    document.getElementById('kpi-grid').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-label">Bola de Neve — prazo</div>
+        <div class="kpi-value blue">${neve.meses} meses</div>
+        <div class="kpi-sub">${(neve.meses/12).toFixed(1).replace('.',',')} anos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avalanche — prazo</div>
+        <div class="kpi-value red">${aval.meses} meses</div>
+        <div class="kpi-sub">${(aval.meses/12).toFixed(1).replace('.',',')} anos</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Juros — Bola de Neve</div>
+        <div class="kpi-value blue">${fmtS(neve.totalJuros)}</div>
+        <div class="kpi-sub">${(neve.totalJuros/totalDividas*100).toFixed(0)}% do total</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Juros — Avalanche</div>
+        <div class="kpi-value red">${fmtS(aval.totalJuros)}</div>
+        <div class="kpi-sub">${(difJuros > 0 ? 'Economia de ' : '') + fmtS(Math.abs(difJuros))}</div>
+      </div>
+    `;
+
+    // CHART
+    const maxLen = Math.max(neve.historico.length, aval.historico.length);
+    const labels = Array.from({length: maxLen}, (_,i) => i === 0 ? 'Hoje' : `Mês ${i}`);
+    const step = maxLen <= 60 ? 1 : Math.ceil(maxLen/60);
+    const lbls = [], dataNeve = [], dataAval = [];
+    for (let i = 0; i < maxLen; i += step) {
+      lbls.push(labels[i]);
+      dataNeve.push(neve.historico[i] ?? 0);
+      dataAval.push(aval.historico[i] ?? 0);
+    }
+
+    const ctx = document.getElementById('meuChart').getContext('2d');
+    if (chartInst) chartInst.destroy();
+    chartInst = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: lbls,
+        datasets: [
+          { label:'Bola de Neve', data: dataNeve, borderColor:'var(--blue)', backgroundColor:'rgba(91,155,213,0.07)', fill:true, tension:0.3, borderWidth:2, pointRadius:0 },
+          { label:'Avalanche', data: dataAval, borderColor:'var(--red)', backgroundColor:'rgba(224,112,112,0.07)', fill:true, tension:0.3, borderWidth:2, pointRadius:0 }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { display:false },
+          tooltip: {
+            backgroundColor:'#0f2444', borderColor:'rgba(201,168,76,0.3)', borderWidth:1,
+            titleColor:'#e2c47a', bodyColor:'rgba(245,240,232,0.7)', padding:12,
+            callbacks: { label: c => `${c.dataset.label}: ${fmtS(c.parsed.y)}` }
+          }
+        },
+        scales: {
+          x: { grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'rgba(245,240,232,0.35)',font:{size:10},maxTicksLimit:10} },
+          y: { grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'rgba(245,240,232,0.35)',font:{size:10},callback:v=>fmtS(v)} }
+        }
+      }
+    });
+
+    // ORDEM
+    const ordemNeve = [...neve.ordemQuit];
+    const ordemAval = [...aval.ordemQuit];
+    document.getElementById('ordem-grid').innerHTML = `
+      <div class="ordem-col">
+        <div class="ordem-col-title blue">❄️ Ordem — Bola de Neve</div>
+        ${ordemNeve.map((d,i) => `
+          <div class="ordem-item">
+            <div class="ordem-num blue">${i+1}</div>
+            <div class="ordem-info">
+              <div class="ordem-nome">${d.nome}</div>
+              <div class="ordem-detalhe">${d.taxa.toFixed(2).replace('.',',')}% a.m. · ${fmt(d.saldoOriginal)}</div>
+            </div>
+            <div class="ordem-mes">${d.mes}º mês</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="ordem-col">
+        <div class="ordem-col-title red">🌊 Ordem — Avalanche</div>
+        ${ordemAval.map((d,i) => `
+          <div class="ordem-item">
+            <div class="ordem-num red">${i+1}</div>
+            <div class="ordem-info">
+              <div class="ordem-nome">${d.nome}</div>
+              <div class="ordem-detalhe">${d.taxa.toFixed(2).replace('.',',')}% a.m. · ${fmt(d.saldoOriginal)}</div>
+            </div>
+            <div class="ordem-mes">${d.mes}º mês</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // INSIGHT
+    document.getElementById('insight-box').innerHTML = `
+      <div class="insight-icon">💡</div>
+      <div class="insight-text">${gerarInsight(neve, aval, difMeses, difJuros, vencedor)}</div>
+    `;
+
+    document.getElementById('resultado').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function gerarInsight(neve, aval, difMeses, difJuros, vencedor) {
+    if (vencedor === 'avalanche') {
+      return `A Avalanche economiza <strong>${fmt(Math.abs(difJuros))}</strong> em juros e termina <strong>${Math.abs(difMeses)} meses antes</strong>. Matematicamente é sempre mais eficiente — ataca primeiro os juros mais caros. O desafio é motivacional: a primeira dívida pode demorar para sumir, exigindo disciplina. Se você consegue manter o foco nos números, vá de Avalanche.`;
+    }
+    if (vencedor === 'neve') {
+      return `Neste cenário as estratégias ficaram próximas. A Bola de Neve tem uma vantagem real que os números não capturam: <strong>motivação</strong>. Cada dívida quitada libera o valor da parcela para atacar a próxima — criando um ciclo de aceleração. Para muitas pessoas, a consistência supera a eficiência matemática.`;
+    }
+    return `As estratégias chegam quase no mesmo resultado aqui. A diferença real está no <strong>comportamento</strong>: Avalanche exige disciplina para persistir quando as vitórias demoram. Bola de Neve entrega satisfação mais rápido. Escolha a que você vai conseguir manter por ${neve.meses} meses sem desistir.`;
+  }
+
+  // Inicia com 3 dívidas de exemplo
+  adicionarDivida('Cartão de Crédito', 5000, 12.9, 200);
+  adicionarDivida('Empréstimo Pessoal', 15000, 3.5, 450);
+  adicionarDivida('Financiamento', 30000, 1.2, 800);
+  document.getElementById('pagamentoTotal').value = 1800;
+  document.getElementById('lbl-total').textContent = fmt(1800);
+  atualizarResumo();
+</script>
+</body>
+</html>

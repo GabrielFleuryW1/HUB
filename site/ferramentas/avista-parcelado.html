@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À Vista ou Parcelado · Gabriel Fleury</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0B1F3A;
+    --navy-mid: #112850;
+    --navy-card: #0f2444;
+    --navy-light: #1a3a66;
+    --gold: #C9A84C;
+    --gold-light: #e2c47a;
+    --cream: #F5F0E8;
+    --text-muted: rgba(245,240,232,0.55);
+    --red: #E07070;
+    --green: #4CAF82;
+    --blue: #5B9BD5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--cream); min-height: 100vh; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid rgba(201,168,76,0.18);
+    background: rgba(11,31,58,0.97);
+  }
+  .logo-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; }
+  .logo-sub { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 300; }
+  .nav-back { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--gold); }
+
+  .page-hero {
+    padding: 52px 48px 36px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+    background: linear-gradient(180deg, rgba(26,58,102,0.3) 0%, transparent 100%);
+  }
+  .breadcrumb { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; opacity: 0.8; }
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 48px); font-weight: 300; line-height: 1.1; margin-bottom: 10px; }
+  .page-title em { font-style: italic; color: var(--gold-light); }
+  .page-desc { font-size: 14px; color: var(--text-muted); font-weight: 300; max-width: 580px; line-height: 1.65; }
+
+  /* LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 48px 32px; display: flex; flex-direction: column; gap: 28px; }
+
+  /* CARD */
+  .card { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 28px 32px; }
+  .card-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(201,168,76,0.1); }
+
+  /* CAMPO VALOR */
+  .valor-wrapper { position: relative; }
+  .valor-prefix { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text-muted); pointer-events: none; }
+  .valor-input {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 3px; color: var(--cream); font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 300; padding: 16px 20px 16px 44px;
+    outline: none; transition: border-color 0.2s; -moz-appearance: textfield; text-align: center;
+  }
+  .valor-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .valor-input:focus { border-color: rgba(201,168,76,0.5); background: rgba(255,255,255,0.06); }
+
+  /* GRID DOIS LADOS */
+  .dois-lados { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .lado { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 24px 26px; }
+  .lado-title { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .lado-title.gold { color: var(--gold); }
+  .lado-title.blue { color: var(--blue); }
+
+  .field-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+  .field-group:last-child { margin-bottom: 0; }
+  .field-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; display: flex; justify-content: space-between; }
+  .field-val { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: var(--gold-light); }
+  .field-hint { font-size: 11px; color: var(--text-muted); font-weight: 300; }
+
+  .input-wrap { position: relative; }
+  .inp-prefix { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted); pointer-events: none; }
+
+  input[type="number"] {
+    width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 3px; color: var(--cream); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 10px 12px 10px 32px; outline: none; transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: rgba(201,168,76,0.5); background: rgba(255,255,255,0.06); }
+
+  input[type="range"] {
+    width: 100%; -webkit-appearance: none; height: 3px;
+    background: rgba(201,168,76,0.2); border-radius: 2px; outline: none; margin-top: 4px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--gold); cursor: pointer;
+  }
+
+  /* RENTABILIDADE OPCOES */
+  .rent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .rent-btn {
+    padding: 10px 8px; text-align: center; cursor: pointer; font-size: 11px; line-height: 1.4;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 3px; color: var(--text-muted); transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .rent-btn:hover { border-color: rgba(201,168,76,0.3); color: var(--cream); }
+  .rent-btn.active { background: rgba(201,168,76,0.1); border-color: var(--gold); color: var(--gold-light); }
+  .rent-btn small { display: block; font-size: 10px; opacity: 0.7; margin-top: 2px; }
+
+  /* DESCONTO TOGGLE */
+  .desconto-toggle { display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 12px; }
+  .toggle-track {
+    width: 36px; height: 20px; border-radius: 10px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(201,168,76,0.2);
+    position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle-track.on { background: rgba(201,168,76,0.3); border-color: var(--gold); }
+  .toggle-thumb {
+    position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--text-muted); transition: all 0.2s;
+  }
+  .toggle-track.on .toggle-thumb { left: 18px; background: var(--gold); }
+  .toggle-label { font-size: 12px; color: var(--text-muted); }
+
+  /* CALC BTN */
+  .calc-btn {
+    width: 100%; background: var(--gold); color: var(--navy); border: none; padding: 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; border-radius: 3px;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .calc-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* RESULTADO */
+  .resultado { display: none; flex-direction: column; gap: 20px; }
+  .resultado.visivel { display: flex; }
+
+  .veredicto {
+    border-radius: 4px; padding: 26px 30px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .veredicto.avista { background: rgba(76,175,130,0.08); border: 1px solid rgba(76,175,130,0.25); }
+  .veredicto.parcelado { background: rgba(91,155,213,0.08); border: 1px solid rgba(91,155,213,0.25); }
+  .veredicto.empate { background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.22); }
+  .veredicto-icon { font-size: 40px; flex-shrink: 0; }
+  .veredicto-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+  .veredicto-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; line-height: 1.2; }
+  .veredicto-sub { font-size: 13px; color: var(--text-muted); margin-top: 8px; font-weight: 300; line-height: 1.6; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .kpi-card { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; padding: 18px 20px; }
+  .kpi-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; line-height: 1; }
+  .kpi-value.gold { color: var(--gold-light); }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.blue { color: var(--blue); }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+
+  .compare-table { background: var(--navy-card); border: 1px solid rgba(201,168,76,0.1); border-radius: 4px; overflow: hidden; }
+  .compare-header { display: grid; grid-template-columns: 1fr 1fr 1fr; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(201,168,76,0.1); }
+  .compare-header div { padding: 12px 18px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); }
+  .compare-header div:not(:first-child) { text-align: right; }
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  .compare-row:hover { background: rgba(201,168,76,0.03); }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-row div { padding: 11px 18px; font-size: 13px; color: var(--text-muted); }
+  .compare-row div:first-child { color: var(--cream); }
+  .compare-row div:not(:first-child) { text-align: right; font-family: 'Cormorant Garamond', serif; font-size: 16px; }
+  .compare-row div.winner { color: var(--green); }
+  .compare-row div.loser { color: var(--red); }
+
+  .insight-box { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.15); border-radius: 4px; padding: 18px 22px; display: flex; gap: 14px; }
+  .insight-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .insight-text { font-size: 13px; line-height: 1.7; color: rgba(245,240,232,0.82); font-weight: 300; }
+  .insight-text strong { color: var(--cream); font-weight: 500; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeIn 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div>
+    <div class="logo-name">Gabriel Fleury</div>
+    <div class="logo-sub">Consultoria Financeira</div>
+  </div>
+  <a href="../index.html" class="nav-back">← Todas as ferramentas</a>
+</nav>
+
+<div class="page-hero">
+  <div class="breadcrumb">Ferramentas · Consumo</div>
+  <h1 class="page-title">À Vista ou <em>Parcelado?</em></h1>
+  <p class="page-desc">Descubra se vale mais a pena pagar à vista (com desconto) ou parcelar — levando em conta o que seu dinheiro renderia se ficasse investido.</p>
+</div>
+
+<div class="container">
+
+  <!-- VALOR DO BEM -->
+  <div class="card">
+    <div class="card-title">Valor da compra</div>
+    <div class="valor-wrapper">
+      <span class="valor-prefix">R$</span>
+      <input type="number" class="valor-input" id="valorBem" value="10000" min="1" step="100"
+        oninput="document.getElementById('range-bem').value=this.value">
+    </div>
+    <input type="range" id="range-bem" min="100" max="500000" step="100" value="10000"
+      oninput="document.getElementById('valorBem').value=this.value" style="margin-top:14px">
+  </div>
+
+  <!-- DOIS LADOS -->
+  <div class="dois-lados">
+
+    <!-- À VISTA -->
+    <div class="lado">
+      <div class="lado-title gold">Pagamento à vista</div>
+
+      <div class="desconto-toggle" onclick="toggleDesconto()">
+        <div class="toggle-track" id="toggle-desc"><div class="toggle-thumb"></div></div>
+        <span class="toggle-label">Tem desconto para pagamento à vista?</span>
+      </div>
+
+      <div id="campo-desconto" style="display:none">
+        <div class="field-group">
+          <div class="field-label">
+            <span>Desconto oferecido</span>
+            <span class="field-val" id="lbl-desc">5,0%</span>
+          </div>
+          <div class="input-wrap">
+            <span class="inp-prefix">%</span>
+            <input type="number" id="desconto" value="5" min="0" max="50" step="0.5"
+              oninput="document.getElementById('lbl-desc').value=this.value+'%'; document.getElementById('range-desc').value=this.value; syncDesc()">
+          </div>
+          <input type="range" id="range-desc" min="0" max="30" step="0.5" value="5"
+            oninput="document.getElementById('desconto').value=this.value; syncDesc()">
+        </div>
+        <div class="field-group">
+          <div class="field-label"><span>Valor à vista com desconto</span></div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--green);padding:8px 0" id="valor-vista-desc">R$ 9.500,00</div>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:8px">
+        <div class="field-label"><span>Onde está esse dinheiro hoje?</span></div>
+        <div class="rent-grid">
+          <div class="rent-btn" onclick="setRent(0, this)">Não rende<small>0% a.a.</small></div>
+          <div class="rent-btn" onclick="setRent(6.17, this)">Poupança<small>~6,17% a.a.</small></div>
+          <div class="rent-btn active" onclick="setRent(10.65, this)">Tesouro Selic<small>~10,65% a.a.</small></div>
+          <div class="rent-btn" onclick="setRent(11.55, this)">CDB 100% CDI<small>~11,55% a.a.</small></div>
+          <div class="rent-btn" onclick="setRent(15, this)">Renda Variável<small>~15% a.a.</small></div>
+          <div class="rent-btn" id="btn-custom-rent" onclick="mostrarCustomRent()">Personalizar<small>Digitar taxa</small></div>
+        </div>
+        <div id="custom-rent-field" style="display:none">
+          <div class="input-wrap" style="margin-top:6px">
+            <span class="inp-prefix">%</span>
+            <input type="number" id="rentCustom" value="10" min="0" max="50" step="0.1" placeholder="Taxa a.a."
+              oninput="rentabilidade=parseFloat(this.value)||0">
+          </div>
+          <div class="field-hint" style="margin-top:4px">Rentabilidade anual líquida (já descontado IR)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARCELADO -->
+    <div class="lado">
+      <div class="lado-title blue">Pagamento parcelado</div>
+
+      <div class="field-group">
+        <div class="field-label">
+          <span>Número de parcelas</span>
+          <span class="field-val" id="lbl-parcelas">12x</span>
+        </div>
+        <div class="input-wrap">
+          <span class="inp-prefix" style="font-size:11px;left:9px">nº</span>
+          <input type="number" id="numParcelas" value="12" min="2" max="60" step="1" style="padding-left:32px"
+            oninput="document.getElementById('lbl-parcelas').value=this.value+'x'; document.getElementById('range-parcelas').value=this.value">
+        </div>
+        <input type="range" id="range-parcelas" min="2" max="60" step="1" value="12"
+          oninput="document.getElementById('numParcelas').value=this.value; document.getElementById('lbl-parcelas').textContent=this.value+'x'">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label"><span>Parcelamento tem juros?</span></div>
+        <div style="display:flex;gap:8px;margin-top:2px">
+          <button class="rent-btn active" id="btn-sem-juros" style="flex:1" onclick="setJuros(false)">Sem juros<small>0% a.m.</small></button>
+          <button class="rent-btn" id="btn-com-juros" style="flex:1" onclick="setJuros(true)">Com juros<small>Informar taxa</small></button>
+        </div>
+      </div>
+
+      <div id="campo-juros" style="display:none">
+        <div class="field-group">
+          <div class="field-label">
+            <span>Taxa de juros mensal</span>
+            <span class="field-val" id="lbl-juros">2,99% a.m.</span>
+          </div>
+          <div class="input-wrap">
+            <span class="inp-prefix">%</span>
+            <input type="number" id="taxaJuros" value="2.99" min="0.1" max="20" step="0.1"
+              oninput="document.getElementById('lbl-juros').textContent=parseFloat(this.value).toFixed(2).replace('.',',')+'% a.m.'; document.getElementById('range-juros').value=this.value">
+          </div>
+          <input type="range" id="range-juros" min="0.5" max="15" step="0.1" value="2.99"
+            oninput="document.getElementById('taxaJuros').value=this.value; document.getElementById('lbl-juros').textContent=parseFloat(this.value).toFixed(2).replace('.',',')+'% a.m.'">
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-top:6px">
+        <div class="field-label"><span>Valor estimado de cada parcela</span></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--blue);padding:8px 0" id="valor-parcela-preview">R$ 833,33</div>
+        <div class="field-hint" id="total-parcelado-preview">Total: R$ 10.000,00</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BTN -->
+  <button class="calc-btn" onclick="calcular()">Qual vale a pena?</button>
+
+  <!-- RESULTADO -->
+  <div class="resultado" id="resultado">
+
+    <div id="veredicto-box" class="veredicto animate-in"></div>
+
+    <div class="kpi-grid animate-in" style="animation-delay:0.05s" id="kpi-grid"></div>
+
+    <div class="compare-table animate-in" style="animation-delay:0.1s" id="compare-table"></div>
+
+    <div class="insight-box animate-in" style="animation-delay:0.15s" id="insight-box"></div>
+
+  </div>
+
+</div>
+
+<script>
+  let rentabilidade = 10.65;
+  let temDesconto = false;
+  let temJuros = false;
+
+  function fmt(v) { return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL', minimumFractionDigits:2 }); }
+  function pct(v) { return v.toFixed(2).replace('.',',') + '%'; }
+
+  function toggleDesconto() {
+    temDesconto = !temDesconto;
+    document.getElementById('toggle-desc').classList.toggle('on', temDesconto);
+    document.getElementById('campo-desconto').style.display = temDesconto ? 'block' : 'none';
+    syncDesc();
+  }
+
+  function syncDesc() {
+    const bem = parseFloat(document.getElementById('valorBem').value) || 0;
+    const desc = parseFloat(document.getElementById('desconto').value) || 0;
+    const valorVista = bem * (1 - desc/100);
+    document.getElementById('valor-vista-desc').textContent = fmt(valorVista);
+    document.getElementById('lbl-desc').textContent = pct(desc);
+    atualizarParcela();
+  }
+
+  function setRent(v, el) {
+    rentabilidade = v;
+    document.querySelectorAll('.rent-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('custom-rent-field').style.display = 'none';
+  }
+
+  function mostrarCustomRent() {
+    document.querySelectorAll('.rent-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-custom-rent').classList.add('active');
+    document.getElementById('custom-rent-field').style.display = 'block';
+    rentabilidade = parseFloat(document.getElementById('rentCustom').value) || 10;
+  }
+
+  function setJuros(sim) {
+    temJuros = sim;
+    document.getElementById('btn-sem-juros').classList.toggle('active', !sim);
+    document.getElementById('btn-com-juros').classList.toggle('active', sim);
+    document.getElementById('campo-juros').style.display = sim ? 'block' : 'none';
+    atualizarParcela();
+  }
+
+  function atualizarParcela() {
+    const bem = parseFloat(document.getElementById('valorBem').value) || 0;
+    const desc = temDesconto ? (parseFloat(document.getElementById('desconto').value)||0) : 0;
+    const valorBase = bem; // parcelado é sempre sobre o valor cheio
+    const n = parseInt(document.getElementById('numParcelas').value) || 12;
+    const taxaM = temJuros ? (parseFloat(document.getElementById('taxaJuros').value)||0)/100 : 0;
+
+    let parcela, totalParc;
+    if (taxaM > 0) {
+      parcela = valorBase * taxaM / (1 - Math.pow(1+taxaM, -n));
+      totalParc = parcela * n;
+    } else {
+      parcela = valorBase / n;
+      totalParc = valorBase;
+    }
+
+    document.getElementById('valor-parcela-preview').textContent = fmt(parcela);
+    document.getElementById('total-parcelado-preview').textContent = `Total: ${fmt(totalParc)}`;
+  }
+
+  // Atualiza preview em tempo real
+  ['valorBem','numParcelas','desconto','taxaJuros'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', atualizarParcela);
+  });
+
+  function calcular() {
+    const bem = parseFloat(document.getElementById('valorBem').value) || 0;
+    const desc = temDesconto ? (parseFloat(document.getElementById('desconto').value)||0) : 0;
+    const n = parseInt(document.getElementById('numParcelas').value) || 12;
+    const taxaM = temJuros ? (parseFloat(document.getElementById('taxaJuros').value)||0)/100 : 0;
+    const rentAnual = rentabilidade / 100;
+    const rentMensal = Math.pow(1 + rentAnual, 1/12) - 1;
+
+    if (!bem || !n) { alert('Preencha o valor e o número de parcelas.'); return; }
+
+    // ── À VISTA ──
+    const valorVista = bem * (1 - desc/100);
+
+    // Custo de oportunidade: se pagar à vista, perde o rendimento do dinheiro pelo período
+    // = quanto o valor à vista renderia nos próximos n meses
+    const custoOpVista = valorVista * (Math.pow(1 + rentAnual, n/12) - 1);
+
+    // Custo real à vista = valor pago + oportunidade perdida
+    const custoRealVista = valorVista + custoOpVista;
+
+    // ── PARCELADO ──
+    let parcela, totalParcelado;
+    if (taxaM > 0) {
+      parcela = bem * taxaM / (1 - Math.pow(1+taxaM, -n));
+      totalParcelado = parcela * n;
+    } else {
+      parcela = bem / n;
+      totalParcelado = bem;
+    }
+
+    // Enquanto parcela, o dinheiro que sobrou vai rendendo
+    // Patrimônio acumulado investindo as parcelas mensalmente
+    let patrimonioInvestido = valorVista; // começa com o valor à vista
+    let acumuladoParcelando = 0;
+    for (let m = 1; m <= n; m++) {
+      patrimonioInvestido *= (1 + rentMensal); // rende
+      patrimonioInvestido -= parcela; // paga parcela
+      acumuladoParcelando += parcela;
+    }
+
+    // Custo real parcelado = total pago - rendimento obtido
+    // Rendimento: o dinheiro que teria ficado investido ao longo dos n meses
+    // Simulamos: se não pagou à vista, manteve o valor Vista investido e foi sacando parcelas
+    let saldo = valorVista;
+    let totalJurosRecebidos = 0;
+    for (let m = 1; m <= n; m++) {
+      const rend = saldo * rentMensal;
+      totalJurosRecebidos += rend;
+      saldo = saldo + rend - parcela;
+    }
+
+    const custoRealParcelado = totalParcelado - totalJurosRecebidos;
+    const economia = custoRealVista - custoRealParcelado;
+    const vencedor = Math.abs(economia) < 1 ? 'empate' : economia > 0 ? 'parcelado' : 'avista';
+
+    renderResultado({
+      bem, valorVista, desc, n, parcela, totalParcelado,
+      taxaM, rentAnual, custoRealVista, custoRealParcelado,
+      totalJurosRecebidos, custoOpVista, economia, vencedor
+    });
+  }
+
+  function renderResultado(d) {
+    document.getElementById('resultado').classList.add('visivel');
+
+    // VEREDICTO
+    const vBox = document.getElementById('veredicto-box');
+    vBox.className = 'veredicto animate-in ' + d.vencedor;
+    if (d.vencedor === 'avista') {
+      vBox.innerHTML = `
+        <div class="veredicto-icon">💰</div>
+        <div>
+          <div class="veredicto-label">Resultado da análise</div>
+          <div class="veredicto-title">Vale mais a pena pagar à vista</div>
+          <div class="veredicto-sub">Mesmo perdendo o rendimento do dinheiro, o desconto de ${pct(d.desc)} compensa. Você economiza <strong>${fmt(Math.abs(d.economia))}</strong> no custo real da compra.</div>
+        </div>`;
+    } else if (d.vencedor === 'parcelado') {
+      vBox.innerHTML = `
+        <div class="veredicto-icon">📊</div>
+        <div>
+          <div class="veredicto-label">Resultado da análise</div>
+          <div class="veredicto-title">Vale mais a pena parcelar</div>
+          <div class="veredicto-sub">Mantendo o dinheiro investido e pagando as parcelas com o rendimento, você ganha <strong>${fmt(Math.abs(d.economia))}</strong> em relação ao pagamento à vista.</div>
+        </div>`;
+    } else {
+      vBox.innerHTML = `
+        <div class="veredicto-icon">⚖️</div>
+        <div>
+          <div class="veredicto-label">Resultado da análise</div>
+          <div class="veredicto-title">Empate técnico</div>
+          <div class="veredicto-sub">A diferença é mínima. Escolha conforme sua preferência: à vista elimina a preocupação com parcelas; parcelado mantém liquidez.</div>
+        </div>`;
+    }
+
+    // KPIs
+    document.getElementById('kpi-grid').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-label">Custo real à vista</div>
+        <div class="kpi-value ${d.vencedor==='avista'?'green':'red'}">${fmt(d.custoRealVista)}</div>
+        <div class="kpi-sub">Valor pago + oportunidade perdida</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Custo real parcelado</div>
+        <div class="kpi-value ${d.vencedor==='parcelado'?'green':'red'}">${fmt(d.custoRealParcelado)}</div>
+        <div class="kpi-sub">Total pago menos rendimento obtido</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Diferença</div>
+        <div class="kpi-value gold">${fmt(Math.abs(d.economia))}</div>
+        <div class="kpi-sub">A favor de: ${d.vencedor === 'avista' ? 'à vista' : d.vencedor === 'parcelado' ? 'parcelado' : 'nenhum'}</div>
+      </div>
+    `;
+
+    // TABELA COMPARATIVA
+    document.getElementById('compare-table').innerHTML = `
+      <div class="compare-header">
+        <div>Item</div>
+        <div>À Vista</div>
+        <div>Parcelado</div>
+      </div>
+      <div class="compare-row">
+        <div>Valor pago</div>
+        <div class="${d.valorVista <= d.totalParcelado ? 'winner':'loser'}">${fmt(d.valorVista)}</div>
+        <div class="${d.totalParcelado <= d.valorVista ? 'winner':'loser'}">${fmt(d.totalParcelado)}</div>
+      </div>
+      <div class="compare-row">
+        <div>Rendimento do dinheiro</div>
+        <div class="loser">− ${fmt(d.custoOpVista)}</div>
+        <div class="winner">+ ${fmt(d.totalJurosRecebidos)}</div>
+      </div>
+      <div class="compare-row">
+        <div>Parcela mensal</div>
+        <div>—</div>
+        <div>${fmt(d.parcela)} × ${d.n}x</div>
+      </div>
+      ${d.taxaM > 0 ? `
+      <div class="compare-row">
+        <div>Juros do parcelamento</div>
+        <div>—</div>
+        <div class="loser">${fmt(d.totalParcelado - d.bem)}</div>
+      </div>` : ''}
+      <div class="compare-row" style="background:rgba(201,168,76,0.04)">
+        <div><strong>Custo real total</strong></div>
+        <div class="${d.vencedor==='avista'?'winner':'loser'}"><strong>${fmt(d.custoRealVista)}</strong></div>
+        <div class="${d.vencedor==='parcelado'?'winner':'loser'}"><strong>${fmt(d.custoRealParcelado)}</strong></div>
+      </div>
+    `;
+
+    // INSIGHT
+    document.getElementById('insight-box').innerHTML = `
+      <div class="insight-icon">💡</div>
+      <div class="insight-text">${gerarInsight(d)}</div>
+    `;
+
+    document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function gerarInsight(d) {
+    if (d.vencedor === 'avista') {
+      return `O desconto de <strong>${pct(d.desc)}</strong> (${fmt(d.bem * d.desc/100)}) supera o rendimento que você teria mantendo o dinheiro investido por ${d.n} meses. Vale pagar à vista. Regra prática: se o desconto à vista for maior que a taxa do seu investimento no período, pague à vista.`;
+    }
+    if (d.vencedor === 'parcelado') {
+      if (d.taxaM === 0) {
+        return `Parcelamento sem juros é crédito gratuito. Mantendo <strong>${fmt(d.valorVista)}</strong> investido a <strong>${pct(d.rentAnual*100)} a.a.</strong> e pagando as parcelas com o rendimento, você acumula <strong>${fmt(d.totalJurosRecebidos)}</strong> a mais do que se tivesse pago à vista. Sempre parcele sem juros quando o dinheiro estiver bem aplicado.`;
+      }
+      return `Mesmo com juros de <strong>${pct(d.taxaM*100)} a.m.</strong>, o rendimento do dinheiro investido (${fmt(d.totalJurosRecebidos)}) ainda supera o custo do parcelamento. Mas atenção: qualquer queda na rentabilidade da aplicação pode inverter esse resultado.`;
+    }
+    return `Os custos são praticamente iguais. Nesse caso, prefira parcelar se precisar de liquidez, ou pagar à vista se quiser eliminar a dívida e ter tranquilidade. A diferença financeira é irrelevante.`;
+  }
+
+  // Init preview
+  atualizarParcela();
+  syncDesc();
+</script>
+</body>
+</html>
