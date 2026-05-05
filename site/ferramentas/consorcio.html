@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financiamento × Consórcio · Gabriel Fleury</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  :root{--navy:#0B1F3A;--navy-mid:#112850;--navy-card:#0f2444;--navy-light:#1a3a66;--gold:#C9A84C;--gold-light:#e2c47a;--cream:#F5F0E8;--text-muted:rgba(245,240,232,0.55);--red:#E07070;--green:#4CAF82;--blue:#5B9BD5;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid rgba(201,168,76,0.18);background:rgba(11,31,58,0.97);}
+  .logo-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:0.04em;}
+  .logo-sub{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:300;}
+  .nav-back{font-size:12px;color:var(--text-muted);text-decoration:none;letter-spacing:0.08em;display:flex;align-items:center;gap:8px;transition:color 0.2s;}
+  .nav-back:hover{color:var(--gold);}
+  .page-hero{padding:48px 48px 32px;border-bottom:1px solid rgba(201,168,76,0.1);background:linear-gradient(180deg,rgba(26,58,102,0.3) 0%,transparent 100%);}
+  .breadcrumb{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;opacity:0.8;}
+  .page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,46px);font-weight:300;line-height:1.1;margin-bottom:8px;}
+  .page-title em{font-style:italic;color:var(--gold-light);}
+  .page-desc{font-size:13px;color:var(--text-muted);font-weight:300;max-width:620px;line-height:1.65;}
+  .main-layout{display:grid;grid-template-columns:440px 1fr;min-height:calc(100vh - 160px);}
+  .inputs-panel{background:var(--navy-card);border-right:1px solid rgba(201,168,76,0.12);padding:28px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;}
+  .inputs-panel::-webkit-scrollbar{width:4px;}
+  .inputs-panel::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.15);border-radius:2px;}
+  .panel-section{display:flex;flex-direction:column;gap:12px;}
+  .panel-section-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);padding-bottom:10px;border-bottom:1px solid rgba(201,168,76,0.12);}
+  .section-badge{display:inline-block;font-size:9px;letter-spacing:0.15em;padding:2px 8px;border-radius:1px;margin-left:8px;vertical-align:middle;}
+  .badge-fin{background:rgba(201,168,76,0.12);color:var(--gold);border:1px solid rgba(201,168,76,0.2);}
+  .badge-con{background:rgba(76,175,130,0.12);color:var(--green);border:1px solid rgba(76,175,130,0.2);}
+  .field-group{display:flex;flex-direction:column;gap:4px;}
+  .field-label{font-size:12px;color:var(--text-muted);letter-spacing:0.04em;display:flex;justify-content:space-between;align-items:center;}
+  .field-val{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--gold-light);}
+  .field-hint{font-size:10px;color:var(--text-muted);font-weight:300;line-height:1.4;}
+  .input-wrapper{position:relative;}
+  .input-prefix{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);pointer-events:none;}
+  input[type="number"]{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:3px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px 9px 32px;outline:none;transition:border-color 0.2s;-moz-appearance:textfield;}
+  input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
+  input[type="number"]:focus{border-color:rgba(201,168,76,0.5);background:rgba(255,255,255,0.06);}
+  input[type="range"]{width:100%;-webkit-appearance:none;height:3px;background:rgba(201,168,76,0.2);border-radius:2px;outline:none;margin-top:3px;}
+  input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);cursor:pointer;}
+  .divider-line{height:1px;background:rgba(201,168,76,0.08);}
+  .indice-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;border-radius:3px;overflow:hidden;border:1px solid rgba(201,168,76,0.15);}
+  .indice-btn{padding:9px 6px;text-align:center;cursor:pointer;font-size:11px;background:rgba(255,255,255,0.03);color:var(--text-muted);transition:all 0.2s;border:none;font-family:'DM Sans',sans-serif;letter-spacing:0.04em;}
+  .indice-btn:hover{background:rgba(201,168,76,0.06);color:var(--cream);}
+  .indice-btn.active{background:rgba(201,168,76,0.12);color:var(--gold-light);}
+  .indice-btn small{display:block;font-size:9px;opacity:0.7;margin-top:2px;}
+  .lance-section{background:rgba(76,175,130,0.04);border:1px solid rgba(76,175,130,0.12);border-radius:3px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+  .lance-title{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--green);}
+  .lance-resumo{font-size:11px;color:var(--text-muted);padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:2px;line-height:1.7;}
+  .lance-resumo span{color:var(--cream);font-weight:500;}
+  .calc-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:13px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:background 0.2s,transform 0.15s;margin-top:4px;}
+  .calc-btn:hover{background:var(--gold-light);transform:translateY(-1px);}
+  .results-panel{padding:28px 36px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;}
+  .veredicto{border-radius:4px;padding:22px 26px;display:flex;align-items:center;gap:18px;}
+  .veredicto.fin{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);}
+  .veredicto.con{background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.25);}
+  .veredicto.emp{background:rgba(91,155,213,0.08);border:1px solid rgba(91,155,213,0.25);}
+  .veredicto-icon{font-size:36px;flex-shrink:0;}
+  .veredicto-label{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;}
+  .veredicto-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;line-height:1.2;}
+  .veredicto-sub{font-size:13px;color:var(--text-muted);margin-top:6px;font-weight:300;line-height:1.5;}
+  .reajuste-box{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:16px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .reaj-item{display:flex;flex-direction:column;gap:3px;}
+  .reaj-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+  .reaj-value{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold-light);}
+  .reaj-sub{font-size:10px;color:var(--text-muted);}
+  .kpi-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .kpi-col{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:16px 18px;}
+  .kpi-col-title{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .kpi-col-title.gold{color:var(--gold);}
+  .kpi-col-title.green{color:var(--green);}
+  .kpi-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+  .kpi-row:last-child{border-bottom:none;}
+  .kpi-row-lbl{font-size:11px;color:var(--text-muted);}
+  .kpi-row-val{font-family:'Cormorant Garamond',serif;font-size:17px;}
+  .kpi-row-val.gold{color:var(--gold-light);}
+  .kpi-row-val.green{color:var(--green);}
+  .kpi-row-val.red{color:var(--red);}
+  .kpi-row-val.blue{color:var(--blue);}
+  .oportunidade-box{background:var(--navy-card);border:1px solid rgba(91,155,213,0.2);border-radius:4px;padding:16px 18px;}
+  .oportunidade-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;margin-bottom:12px;}
+  .oportunidade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .op-item{padding:10px 12px;background:rgba(255,255,255,0.03);border-radius:3px;border:1px solid rgba(255,255,255,0.05);}
+  .op-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;}
+  .op-value{font-family:'Cormorant Garamond',serif;font-size:19px;}
+  .op-sub{font-size:10px;color:var(--text-muted);margin-top:2px;}
+  .chart-wrapper{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:20px 20px 12px;}
+  .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+  .chart-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;}
+  .chart-legend{display:flex;gap:14px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);}
+  .legend-dot{width:8px;height:8px;border-radius:50%;}
+  canvas{width:100%!important;max-height:220px;}
+  .insight-box{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:4px;padding:16px 20px;display:flex;gap:12px;}
+  .insight-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+  .insight-text{font-size:13px;line-height:1.7;color:rgba(245,240,232,0.82);font-weight:300;}
+  .insight-text strong{color:var(--cream);font-weight:500;}
+  .aviso-box{background:rgba(224,112,112,0.07);border:1px solid rgba(224,112,112,0.2);border-radius:4px;padding:12px 16px;font-size:12px;color:rgba(245,240,232,0.7);line-height:1.6;font-weight:300;}
+  .aviso-box strong{color:var(--red);font-weight:500;}
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 40px;color:var(--text-muted);text-align:center;}
+  .empty-icon{font-size:44px;opacity:0.35;}
+  .empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--cream);opacity:0.5;}
+  .empty-desc{font-size:13px;font-weight:300;max-width:300px;line-height:1.6;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .animate-in{animation:fadeIn 0.35s ease both;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div><div class="logo-name">Gabriel Fleury</div><div class="logo-sub">Consultoria Financeira</div></div>
+  <a href="../index.html" class="nav-back">← Todas as ferramentas</a>
+</nav>
+
+<div class="page-hero">
+  <div class="breadcrumb">Ferramentas · Crédito</div>
+  <h1 class="page-title"><em>Financiamento</em> × Consórcio</h1>
+  <p class="page-desc">Compare o custo total de cada modalidade com reajuste anual pelo índice real do contrato, lance embutido e livre, custo de oportunidade e veredicto automático.</p>
+</div>
+
+<div class="main-layout">
+<aside class="inputs-panel">
+
+  <div class="panel-section">
+    <div class="panel-section-title">Dados gerais</div>
+    <div class="field-group">
+      <div class="field-label"><span>Valor do bem</span><span class="field-val" id="lbl-bem">R$ 200.000</span></div>
+      <div class="input-wrapper"><span class="input-prefix">R$</span>
+        <input type="number" id="bem" value="200000" min="5000" step="1000" oninput="syncL('bem','lbl-bem','cur');atualizarLanceResumo()">
+      </div>
+      <input type="range" id="range-bem" min="5000" max="2000000" step="5000" value="200000"
+        oninput="document.getElementById('bem').value=this.value;syncL('bem','lbl-bem','cur');atualizarLanceResumo()">
+    </div>
+    <div class="field-group">
+      <div class="field-label"><span>Rentabilidade do dinheiro</span><span class="field-val" id="lbl-rent">10,00% a.a.</span></div>
+      <div class="input-wrapper"><span class="input-prefix">%</span>
+        <input type="number" id="rent" value="10" min="0" max="30" step="0.5" style="padding-left:32px" oninput="syncL('rent','lbl-rent','pct-a')">
+      </div>
+      <input type="range" id="range-rent" min="0" max="25" step="0.5" value="10"
+        oninput="document.getElementById('rent').value=this.value;syncL('rent','lbl-rent','pct-a')">
+      <div class="field-hint">Taxa que o dinheiro renderia se não fosse usado na compra</div>
+    </div>
+  </div>
+
+  <div class="divider-line"></div>
+
+  <div class="panel-section">
+    <div class="panel-section-title">Financiamento <span class="section-badge badge-fin">Price</span></div>
+    <div class="field-group">
+      <div class="field-label"><span>Entrada</span><span class="field-val" id="lbl-entrada">R$ 0</span></div>
+      <div class="input-wrapper"><span class="input-prefix">R$</span>
+        <input type="number" id="entrada" value="0" min="0" step="1000" oninput="syncL('entrada','lbl-entrada','cur')">
+      </div>
+      <input type="range" id="range-entrada" min="0" max="500000" step="1000" value="0"
+        oninput="document.getElementById('entrada').value=this.value;syncL('entrada','lbl-entrada','cur')">
+    </div>
+    <div class="field-group">
+      <div class="field-label"><span>Taxa de juros mensal</span><span class="field-val" id="lbl-taxafin">1,00% a.m.</span></div>
+      <div class="input-wrapper"><span class="input-prefix">%</span>
+        <input type="number" id="taxafin" value="1" min="0.1" max="10" step="0.05" style="padding-left:32px" oninput="syncL('taxafin','lbl-taxafin','pct-m')">
+      </div>
+      <input type="range" id="range-taxafin" min="0.1" max="5" step="0.05" value="1"
+        oninput="document.getElementById('taxafin').value=this.value;syncL('taxafin','lbl-taxafin','pct-m')">
+    </div>
+    <div class="field-group">
+      <div class="field-label"><span>Prazo</span><span class="field-val" id="lbl-prazofin">120 meses</span></div>
+      <div class="input-wrapper"><span class="input-prefix" style="font-size:10px;left:8px">meses</span>
+        <input type="number" id="prazofin" value="120" min="6" max="520" step="6" style="padding-left:52px" oninput="syncL('prazofin','lbl-prazofin','mes')">
+      </div>
+      <input type="range" id="range-prazofin" min="6" max="520" step="6" value="120"
+        oninput="document.getElementById('prazofin').value=this.value;syncL('prazofin','lbl-prazofin','mes')">
+    </div>
+  </div>
+
+  <div class="divider-line"></div>
+
+  <div class="panel-section">
+    <div class="panel-section-title">Consórcio <span class="section-badge badge-con">Grupo</span></div>
+    <div class="field-group">
+      <div class="field-label"><span>Taxa de administração total</span><span class="field-val" id="lbl-admin">18,00%</span></div>
+      <div class="input-wrapper"><span class="input-prefix">%</span>
+        <input type="number" id="admin" value="18" min="1" max="30" step="0.5" style="padding-left:32px" oninput="syncL('admin','lbl-admin','pct-p')">
+      </div>
+      <input type="range" id="range-admin" min="5" max="30" step="0.5" value="18"
+        oninput="document.getElementById('admin').value=this.value;syncL('admin','lbl-admin','pct-p')">
+    </div>
+    <div class="field-group">
+      <div class="field-label"><span>Fundo de reserva</span><span class="field-val" id="lbl-reserva">2,00%</span></div>
+      <div class="input-wrapper"><span class="input-prefix">%</span>
+        <input type="number" id="reserva" value="2" min="0" max="5" step="0.1" style="padding-left:32px" oninput="syncL('reserva','lbl-reserva','pct-p')">
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label"><span>Prazo do consórcio</span><span class="field-val" id="lbl-prazocon">120 meses</span></div>
+      <div class="input-wrapper"><span class="input-prefix" style="font-size:10px;left:8px">meses</span>
+        <input type="number" id="prazocon" value="120" min="12" max="240" step="6" style="padding-left:52px" oninput="syncL('prazocon','lbl-prazocon','mes');atualizarLanceResumo()">
+      </div>
+      <input type="range" id="range-prazocon" min="12" max="240" step="6" value="120"
+        oninput="document.getElementById('prazocon').value=this.value;syncL('prazocon','lbl-prazocon','mes');atualizarLanceResumo()">
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>Índice de reajuste anual da parcela</span></div>
+      <div class="indice-toggle">
+        <button class="indice-btn active" id="btn-incc" onclick="setIndice('incc',this)">INCC<small>~5,5% a.a.</small></button>
+        <button class="indice-btn" id="btn-ipca" onclick="setIndice('ipca',this)">IPCA<small>~5% a.a.</small></button>
+        <button class="indice-btn" id="btn-custom" onclick="setIndice('custom',this)">Personalizado<small>Digitar</small></button>
+      </div>
+      <div id="campo-indice-custom" style="display:none;margin-top:6px">
+        <div class="input-wrapper"><span class="input-prefix">%</span>
+          <input type="number" id="indiceCustom" value="8" min="0" max="30" step="0.1" style="padding-left:32px" placeholder="% a.a.">
+        </div>
+      </div>
+      <div class="field-hint" id="hint-indice">Reajuste anual aplicado à parcela do consórcio (média histórica INCC 2020–2025: ~5,5% a.a.)</div>
+    </div>
+
+    <div class="lance-section">
+      <div class="lance-title">🎯 Lance (opcional)</div>
+      <div class="field-group">
+        <div class="field-label"><span>Lance embutido (% da carta)</span><span class="field-val" id="lbl-lembutido">0%</span></div>
+        <div class="input-wrapper"><span class="input-prefix">%</span>
+          <input type="number" id="lembutido" value="0" min="0" max="40" step="1" style="padding-left:32px"
+            oninput="syncL('lembutido','lbl-lembutido','pct-p');atualizarLanceResumo()">
+        </div>
+        <input type="range" id="range-lembutido" min="0" max="40" step="1" value="0"
+          oninput="document.getElementById('lembutido').value=this.value;syncL('lembutido','lbl-lembutido','pct-p');atualizarLanceResumo()">
+        <div class="field-hint">% da carta usado como lance — você recebe menos crédito mas antecipa a contemplação</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label"><span>Lance livre (valor próprio)</span><span class="field-val" id="lbl-llivre">R$ 0</span></div>
+        <div class="input-wrapper"><span class="input-prefix">R$</span>
+          <input type="number" id="llivre" value="0" min="0" step="1000"
+            oninput="syncL('llivre','lbl-llivre','cur');atualizarLanceResumo()">
+        </div>
+        <div class="field-hint">Dinheiro próprio oferecido como lance além do embutido</div>
+      </div>
+      <div class="lance-resumo" id="lance-resumo">Sem lance — contemplação estimada por sorteio</div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label"><span>Mês estimado de contemplação</span><span class="field-val" id="lbl-contemp">60º mês</span></div>
+      <div class="input-wrapper"><span class="input-prefix" style="font-size:10px;left:8px">mês</span>
+        <input type="number" id="contemp" value="60" min="1" max="240" step="1" style="padding-left:44px" oninput="syncL('contemp','lbl-contemp','mes-ord')">
+      </div>
+      <input type="range" id="range-contemp" min="1" max="240" step="1" value="60"
+        oninput="document.getElementById('contemp').value=this.value;syncL('contemp','lbl-contemp','mes-ord')">
+      <div class="field-hint">Com lance maior, tende a ser antecipado</div>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calcular()">Comparar agora</button>
+
+</aside>
+
+<main class="results-panel" id="results-panel">
+  <div class="empty-state">
+    <div class="empty-icon">⚖️</div>
+    <div class="empty-title">Pronto para comparar</div>
+    <div class="empty-desc">Preencha os dados e clique em "Comparar agora".</div>
+  </div>
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+let chartInst=null,indiceAtivo='incc';
+const INDICES={incc:5.5,ipca:5};
+
+function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});}
+function fmtS(v){if(v>=1e6)return 'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return 'R$ '+(v/1e3).toFixed(1).replace('.',',')+'K';return fmt(v);}
+function pct(v){return v.toFixed(2).replace('.',',')+"%";}
+
+function syncL(id,lblId,type){
+  const v=parseFloat(document.getElementById(id).value)||0;
+  const r=document.getElementById('range-'+id);if(r)r.value=v;
+  const l=document.getElementById(lblId);if(!l)return;
+  if(type==='cur')l.textContent=fmt(v);
+  else if(type==='pct-a')l.textContent=v.toFixed(2).replace('.',',')+' % a.a.';
+  else if(type==='pct-m')l.textContent=v.toFixed(2).replace('.',',')+' % a.m.';
+  else if(type==='pct-p')l.textContent=v.toFixed(2).replace('.',',')+' %';
+  else if(type==='mes')l.textContent=v+' meses';
+  else if(type==='mes-ord')l.textContent=v+'º mês';
+}
+
+function setIndice(tipo,el){
+  indiceAtivo=tipo;
+  document.querySelectorAll('.indice-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('campo-indice-custom').style.display=tipo==='custom'?'block':'none';
+  const hints={incc:'Reajuste anual da parcela e do saldo pelo INCC (média histórica 2020–2025: ~5,5% a.a.)',ipca:'Reajuste pelo IPCA — inflação ao consumidor (média histórica 2020–2025: ~5% a.a.)',custom:'Digite o percentual anual de reajuste que consta no contrato'};
+  document.getElementById('hint-indice').textContent=hints[tipo];
+}
+
+function getIndiceAnual(){if(indiceAtivo==='custom')return parseFloat(document.getElementById('indiceCustom').value)||0;return INDICES[indiceAtivo];}
+
+function atualizarLanceResumo(){
+  const bem=parseFloat(document.getElementById('bem').value)||0;
+  const pctEmb=parseFloat(document.getElementById('lembutido').value)||0;
+  const ll=parseFloat(document.getElementById('llivre').value)||0;
+  const lEmb=bem*pctEmb/100;
+  const total=lEmb+ll;
+  const credEf=bem-lEmb;
+  const pctTotal=bem>0?(total/bem*100):0;
+  let txt='';
+  if(total===0){txt='Sem lance — contemplação estimada por sorteio';}
+  else{
+    txt=`Lance total: <span>${fmt(total)}</span> (${pct(pctTotal)} da carta)<br>`;
+    if(lEmb>0)txt+=`Embutido: <span>${fmt(lEmb)}</span> · Crédito efetivo: <span>${fmt(credEf)}</span><br>`;
+    if(ll>0)txt+=`Lance livre: <span>${fmt(ll)}</span> (dinheiro próprio)`;
+  }
+  document.getElementById('lance-resumo').innerHTML=txt;
+}
+
+function calcPrice(pv,taxa,n){
+  if(taxa===0)return{pmt:pv/n,totalPago:pv,totalJuros:0};
+  const pmt=pv*taxa/(1-Math.pow(1+taxa,-n));
+  return{pmt,totalPago:pmt*n,totalJuros:pmt*n-pv};
+}
+
+function calcular(){
+  const bem=parseFloat(document.getElementById('bem').value)||0;
+  const entrada=parseFloat(document.getElementById('entrada').value)||0;
+  const taxaFinM=parseFloat(document.getElementById('taxafin').value)/100||0;
+  const prazofin=parseInt(document.getElementById('prazofin').value)||0;
+  const admin=parseFloat(document.getElementById('admin').value)/100||0;
+  const reserva=parseFloat(document.getElementById('reserva').value)/100||0;
+  const prazocon=parseInt(document.getElementById('prazocon').value)||0;
+  const contemp=parseInt(document.getElementById('contemp').value)||0;
+  const rentAnual=parseFloat(document.getElementById('rent').value)/100||0;
+  const rentMensal=Math.pow(1+rentAnual,1/12)-1;
+  const pctEmb=parseFloat(document.getElementById('lembutido').value)||0;
+  const llivre=parseFloat(document.getElementById('llivre').value)||0;
+  const lEmb=bem*pctEmb/100;
+  const totalLance=lEmb+llivre;
+  const creditoEfetivo=bem-lEmb;
+  const indiceAnual=getIndiceAnual()/100;
+
+  if(!bem||!prazofin||!prazocon){alert('Preencha todos os campos.');return;}
+  if(contemp>prazocon){alert('Mês de contemplação não pode ser maior que o prazo.');return;}
+
+  // FINANCIAMENTO
+  const valorFin=bem-entrada;
+  const fin=calcPrice(valorFin,taxaFinM,prazofin);
+  const totalFinanciamento=fin.totalPago+entrada;
+
+  // CONSÓRCIO com reajuste anual
+  const totalEncargos=bem*(admin+reserva);
+  const totalConsorcioBruto=bem+totalEncargos;
+  const parcelaBase=totalConsorcioBruto/prazocon;
+  let totalConsorcioPago=0;
+  let parcelaAtual=parcelaBase;
+  const parcelasMes=[];
+  for(let m=1;m<=prazocon;m++){
+    if(m>1&&(m-1)%12===0)parcelaAtual*=(1+indiceAnual);
+    totalConsorcioPago+=parcelaAtual;
+    parcelasMes.push(parcelaAtual);
+  }
+  const parcelaInicial=parcelasMes[0];
+  const parcelaFinal=parcelasMes[prazocon-1];
+  const custoConsorcio=totalConsorcioPago-bem;
+
+  // Custo de oportunidade
+  let patrimonioAcumDif=0;
+  for(let m=1;m<=contemp;m++){
+    const pmtCon=parcelasMes[m-1]||parcelasMes[parcelasMes.length-1];
+    const dif=fin.pmt-pmtCon;
+    if(dif>0)patrimonioAcumDif=(patrimonioAcumDif+dif)*(1+rentMensal);
+  }
+
+  const custoTotalFin=totalFinanciamento;
+  const custoTotalCon=totalConsorcioPago-patrimonioAcumDif-llivre;
+  const economiaBruta=totalFinanciamento-totalConsorcioPago;
+  const economiaLiquida=custoTotalFin-custoTotalCon;
+
+  // Fluxos gráfico
+  const maxMeses=Math.max(prazofin,prazocon);
+  const fluxoFin=[],fluxoCon=[];
+  let acumFin=entrada,acumCon=llivre;
+  for(let m=1;m<=maxMeses;m++){
+    if(m<=prazofin)acumFin+=fin.pmt;
+    if(m<=prazocon)acumCon+=(parcelasMes[m-1]||0);
+    fluxoFin.push(acumFin);
+    fluxoCon.push(acumCon);
+  }
+
+  renderResults({bem,entrada,fin,totalFinanciamento,valorFin,parcelaInicial,parcelaFinal,parcelasMes,totalConsorcioPago,custoConsorcio,admin,reserva,prazocon,prazofin,contemp,economiaBruta,economiaLiquida,patrimonioAcumDif,rentAnual,fluxoFin,fluxoCon,custoTotalFin,custoTotalCon,indiceAnual,lEmb,llivre,totalLance,creditoEfetivo,pctEmb});
+}
+
+function renderResults(d){
+  const vencedor=d.economiaBruta>50?'consorcio':d.economiaBruta<-50?'financiamento':'empate';
+  const panel=document.getElementById('results-panel');
+  const iNome=indiceAtivo==='incc'?'INCC':indiceAtivo==='ipca'?'IPCA':'Personalizado';
+
+  panel.innerHTML=`
+    ${renderVeredicto(vencedor,d,iNome)}
+    <div class="reajuste-box animate-in" style="animation-delay:0.04s">
+      <div class="reaj-item"><div class="reaj-label">Índice aplicado</div><div class="reaj-value">${iNome}</div><div class="reaj-sub">${pct(d.indiceAnual*100)} a.a.</div></div>
+      <div class="reaj-item"><div class="reaj-label">Parcela inicial</div><div class="reaj-value">${fmt(d.parcelaInicial)}</div><div class="reaj-sub">1º mês</div></div>
+      <div class="reaj-item"><div class="reaj-label">Parcela final</div><div class="reaj-value" style="color:var(--red)">${fmt(d.parcelaFinal)}</div><div class="reaj-sub">${d.prazocon}º mês</div></div>
+      <div class="reaj-item"><div class="reaj-label">Crescimento da parcela</div><div class="reaj-value" style="color:var(--red)">+${fmt(d.parcelaFinal-d.parcelaInicial)}</div><div class="reaj-sub">por mês ao final</div></div>
+    </div>
+    <div class="kpi-compare-grid animate-in" style="animation-delay:0.08s">
+      <div class="kpi-col">
+        <div class="kpi-col-title gold">Financiamento · Price</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Parcela mensal (fixa)</span><span class="kpi-row-val gold">${fmt(d.fin.pmt)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Prazo</span><span class="kpi-row-val">${d.prazofin} meses</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Total de juros</span><span class="kpi-row-val red">${fmt(d.fin.totalJuros)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Entrada</span><span class="kpi-row-val">${fmt(d.entrada)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Total desembolsado</span><span class="kpi-row-val red">${fmt(d.totalFinanciamento)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Acesso ao bem</span><span class="kpi-row-val green">Imediato</span></div>
+      </div>
+      <div class="kpi-col">
+        <div class="kpi-col-title green">Consórcio · reajuste ${iNome}</div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Parcela inicial</span><span class="kpi-row-val green">${fmt(d.parcelaInicial)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Parcela final (reajustada)</span><span class="kpi-row-val red">${fmt(d.parcelaFinal)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Encargos (adm + reserva)</span><span class="kpi-row-val red">${fmt(d.custoConsorcio)}</span></div>
+        ${d.totalLance>0?`<div class="kpi-row"><span class="kpi-row-lbl">Lance total</span><span class="kpi-row-val blue">${fmt(d.totalLance)}</span></div>`:''}
+        ${d.lEmb>0?`<div class="kpi-row"><span class="kpi-row-lbl">Crédito efetivo</span><span class="kpi-row-val">${fmt(d.creditoEfetivo)}</span></div>`:''}
+        <div class="kpi-row"><span class="kpi-row-lbl">Total desembolsado</span><span class="kpi-row-val">${fmt(d.totalConsorcioPago)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-lbl">Acesso ao bem</span><span class="kpi-row-val blue">${d.contemp}º mês (estimado)</span></div>
+      </div>
+    </div>
+    <div class="oportunidade-box animate-in" style="animation-delay:0.12s">
+      <div class="oportunidade-title">Custo de oportunidade · ${pct(d.rentAnual*100)} a.a.</div>
+      <div class="oportunidade-grid">
+        <div class="op-item"><div class="op-label">Economia bruta</div><div class="op-value" style="color:${d.economiaBruta>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(d.economiaBruta))}</div><div class="op-sub">${d.economiaBruta>=0?'Consórcio custa menos':'Financiamento custa menos'}</div></div>
+        <div class="op-item"><div class="op-label">Rendimento da diff. até contemplação</div><div class="op-value" style="color:var(--blue)">${fmt(d.patrimonioAcumDif)}</div><div class="op-sub">Acumulado em ${d.contemp} meses</div></div>
+        <div class="op-item"><div class="op-label">Economia líquida</div><div class="op-value" style="color:${d.economiaLiquida>=0?'var(--green)':'var(--red)'}">${fmt(Math.abs(d.economiaLiquida))}</div><div class="op-sub">${d.economiaLiquida>=0?'Consórcio vantajoso':'Financiamento vantajoso'}</div></div>
+      </div>
+    </div>
+    <div class="chart-wrapper animate-in" style="animation-delay:0.15s">
+      <div class="chart-header">
+        <div class="chart-title">Custo Acumulado ao Longo do Tempo</div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#C9A84C"></div>Financiamento</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4CAF82"></div>Consórcio (com reajuste ${iNome})</div>
+        </div>
+      </div>
+      <canvas id="meuChart"></canvas>
+    </div>
+    <div class="insight-box animate-in" style="animation-delay:0.18s">
+      <div class="insight-icon">💡</div>
+      <div class="insight-text">${gerarInsight(d,vencedor,iNome)}</div>
+    </div>
+    <div class="aviso-box animate-in" style="animation-delay:0.2s">
+      <strong>⚠️ Atenção:</strong> O consórcio não garante data de contemplação — sorteio e lance são variáveis. O reajuste pelo ${iNome} é uma estimativa; o índice real varia a cada ano. Confirme o índice de reajuste no contrato antes de assinar.
+    </div>
+  `;
+
+  const maxLen=Math.max(d.prazofin,d.prazocon);
+  const step=maxLen<=60?1:Math.ceil(maxLen/60);
+  const lbls=[],dFin=[],dCon=[];
+  for(let i=0;i<maxLen;i+=step){
+    lbls.push('Mês '+(i+1));
+    dFin.push(d.fluxoFin[i]??d.fluxoFin[d.fluxoFin.length-1]);
+    dCon.push(d.fluxoCon[i]??d.fluxoCon[d.fluxoCon.length-1]);
+  }
+  const ctx=document.getElementById('meuChart').getContext('2d');
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(ctx,{type:'line',data:{labels:lbls,datasets:[
+    {label:'Financiamento',data:dFin,borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.07)',fill:true,tension:0.3,borderWidth:2,pointRadius:0},
+    {label:'Consórcio',data:dCon,borderColor:'#4CAF82',backgroundColor:'rgba(76,175,130,0.07)',fill:true,tension:0.3,borderWidth:2,pointRadius:0}
+  ]},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#0f2444',borderColor:'rgba(201,168,76,0.3)',borderWidth:1,titleColor:'#e2c47a',bodyColor:'rgba(245,240,232,0.7)',padding:10,callbacks:{label:c=>`${c.dataset.label}: ${fmtS(c.parsed.y)}`}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(245,240,232,0.35)',font:{size:10},maxTicksLimit:10}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(245,240,232,0.35)',font:{size:10},callback:v=>fmtS(v)}}}}});
+}
+
+function renderVeredicto(v,d,iNome){
+  if(v==='financiamento')return`<div class="veredicto fin animate-in"><div class="veredicto-icon">🏦</div><div><div class="veredicto-label">Recomendação baseada nos seus dados</div><div class="veredicto-title">Financiamento é mais vantajoso neste cenário</div><div class="veredicto-sub">Com reajuste de ${pct(d.indiceAnual*100)} a.a. pelo ${iNome}, o consórcio fica <strong>${fmt(Math.abs(d.economiaBruta))}</strong> mais caro que o financiamento no total.</div></div></div>`;
+  if(v==='consorcio')return`<div class="veredicto con animate-in"><div class="veredicto-icon">✅</div><div><div class="veredicto-label">Recomendação baseada nos seus dados</div><div class="veredicto-title">Consórcio é mais vantajoso neste cenário</div><div class="veredicto-sub">Mesmo com reajuste pelo ${iNome}, você paga <strong>${fmt(d.economiaBruta)}</strong> a menos no total. Aguardar a contemplação (${d.contemp}º mês) vale a pena.</div></div></div>`;
+  return`<div class="veredicto emp animate-in"><div class="veredicto-icon">⚖️</div><div><div class="veredicto-label">Resultado da comparação</div><div class="veredicto-title">Empate técnico</div><div class="veredicto-sub">Os custos são muito próximos. Simule com diferentes índices de reajuste para ver a sensibilidade do resultado.</div></div></div>`;
+}
+
+function gerarInsight(d,vencedor,iNome){
+  const crescimento=fmt(d.parcelaFinal-d.parcelaInicial);
+  if(vencedor==='consorcio')return`O consórcio custa menos no total, mas atenção: com reajuste de <strong>${pct(d.indiceAnual*100)}</strong> pelo ${iNome}, a parcela que começa em <strong>${fmt(d.parcelaInicial)}</strong> chega a <strong>${fmt(d.parcelaFinal)}</strong> no último mês — <strong>${crescimento} a mais</strong>. Certifique-se de que seu orçamento futuro comporta esse crescimento.${d.totalLance>0?' O lance de '+fmt(d.totalLance)+' antecipa a contemplação e reduz o custo total.':''}`;
+  if(vencedor==='financiamento')return`O reajuste de <strong>${pct(d.indiceAnual*100)}</strong> pelo ${iNome} faz a parcela do consórcio crescer de <strong>${fmt(d.parcelaInicial)}</strong> para <strong>${fmt(d.parcelaFinal)}</strong> ao longo dos ${d.prazocon} meses — <strong>${crescimento} a mais</strong> por mês no final. Isso torna o financiamento mais vantajoso neste cenário, mesmo com os juros.`;
+  return`Empate técnico. O reajuste pelo ${iNome} (${pct(d.indiceAnual*100)} a.a.) faz a parcela crescer ${crescimento}/mês. Se o índice real for maior que o estimado, o financiamento vira a melhor opção. Teste com outros índices para ver a sensibilidade.`;
+}
+
+['bem','entrada','taxafin','prazofin','admin','reserva','prazocon','contemp','rent','lembutido','llivre'].forEach(id=>{
+  const types={bem:'cur',entrada:'cur',taxafin:'pct-m',prazofin:'mes',admin:'pct-p',reserva:'pct-p',prazocon:'mes',contemp:'mes-ord',rent:'pct-a',lembutido:'pct-p',llivre:'cur'};
+  const lbls={bem:'lbl-bem',entrada:'lbl-entrada',taxafin:'lbl-taxafin',prazofin:'lbl-prazofin',admin:'lbl-admin',reserva:'lbl-reserva',prazocon:'lbl-prazocon',contemp:'lbl-contemp',rent:'lbl-rent',lembutido:'lbl-lembutido',llivre:'lbl-llivre'};
+  syncL(id,lbls[id],types[id]);
+});
+atualizarLanceResumo();
+window.addEventListener('load',()=>calcular());
+</script>
+</body>
+</html>
