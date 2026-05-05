@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparador de Renda Fixa · Gabriel Fleury</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  :root{--navy:#0B1F3A;--navy-mid:#112850;--navy-card:#0f2444;--gold:#C9A84C;--gold-light:#e2c47a;--cream:#F5F0E8;--text-muted:rgba(245,240,232,0.55);--red:#E07070;--green:#4CAF82;--blue:#5B9BD5;--purple:#9B7FD4;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid rgba(201,168,76,0.18);background:rgba(11,31,58,0.97);}
+  .logo-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;letter-spacing:0.04em;}
+  .logo-sub{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:300;}
+  .nav-back{font-size:12px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color 0.2s;}
+  .nav-back:hover{color:var(--gold);}
+  .page-hero{padding:48px 48px 32px;border-bottom:1px solid rgba(201,168,76,0.1);background:linear-gradient(180deg,rgba(26,58,102,0.3) 0%,transparent 100%);}
+  .breadcrumb{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;opacity:0.8;}
+  .page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,46px);font-weight:300;line-height:1.1;margin-bottom:8px;}
+  .page-title em{font-style:italic;color:var(--gold-light);}
+  .page-desc{font-size:13px;color:var(--text-muted);font-weight:300;max-width:620px;line-height:1.65;}
+
+  .container{max-width:1000px;margin:0 auto;padding:40px 32px;display:flex;flex-direction:column;gap:24px;}
+
+  /* INPUTS TOPO */
+  .inputs-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .card{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:22px 24px;}
+  .card-title{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(201,168,76,0.1);}
+  .field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+  .field-group:last-child{margin-bottom:0;}
+  .field-label{font-size:12px;color:var(--text-muted);display:flex;justify-content:space-between;}
+  .field-val{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--gold-light);}
+  .field-hint{font-size:10px;color:var(--text-muted);font-weight:300;}
+  .input-wrapper{position:relative;}
+  .inp-prefix{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);pointer-events:none;}
+  input[type="number"]{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.15);border-radius:3px;color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 10px 9px 32px;outline:none;transition:border-color 0.2s;-moz-appearance:textfield;}
+  input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
+  input[type="number"]:focus{border-color:rgba(201,168,76,0.5);background:rgba(255,255,255,0.06);}
+  input[type="range"]{width:100%;-webkit-appearance:none;height:3px;background:rgba(201,168,76,0.2);border-radius:2px;outline:none;margin-top:4px;}
+  input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);cursor:pointer;}
+
+  /* PRODUTOS */
+  .produtos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .produto-card{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:18px 18px;}
+  .produto-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .produto-nome{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;}
+  .produto-badge{font-size:9px;padding:2px 7px;border-radius:1px;letter-spacing:0.1em;}
+  .badge-tributado{background:rgba(224,112,112,0.12);color:var(--red);border:1px solid rgba(224,112,112,0.2);}
+  .badge-isento{background:rgba(76,175,130,0.12);color:var(--green);border:1px solid rgba(76,175,130,0.2);}
+
+  /* IR TABLE */
+  .ir-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px;}
+  .ir-table th{padding:5px 8px;text-align:left;color:var(--text-muted);letter-spacing:0.08em;font-weight:400;}
+  .ir-table td{padding:5px 8px;color:var(--text-muted);}
+  .ir-table tr:hover td{background:rgba(255,255,255,0.02);}
+
+  .calc-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:background 0.2s,transform 0.15s;}
+  .calc-btn:hover{background:var(--gold-light);transform:translateY(-1px);}
+
+  /* RESULTADOS */
+  .resultado{display:none;flex-direction:column;gap:20px;}
+  .resultado.visivel{display:flex;}
+
+  /* RANKING */
+  .ranking-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .rank-card{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:18px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+  .rank-card.winner{border-color:rgba(201,168,76,0.4);}
+  .rank-card.winner::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);}
+  .rank-num{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .rank-num.gold{color:var(--gold);}
+  .rank-nome{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;margin-bottom:12px;}
+  .rank-valor{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gold-light);line-height:1;}
+  .rank-label{font-size:10px;color:var(--text-muted);margin-top:4px;}
+  .rank-taxa{font-size:12px;color:var(--text-muted);margin-top:8px;}
+  .rank-liquido{font-size:13px;margin-top:6px;}
+  .rank-rendimento{font-size:11px;color:var(--text-muted);margin-top:3px;}
+
+  /* TABELA COMPARATIVA */
+  .tabela-wrapper{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;overflow:hidden;}
+  .tabela-titulo{padding:16px 22px;border-bottom:1px solid rgba(201,168,76,0.1);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{padding:10px 16px;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);text-align:right;background:rgba(255,255,255,0.02);}
+  thead th:first-child{text-align:left;}
+  tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;}
+  tbody tr:hover{background:rgba(201,168,76,0.03);}
+  tbody tr:last-child{border-bottom:none;}
+  tbody td{padding:10px 16px;font-size:13px;text-align:right;color:var(--text-muted);}
+  tbody td:first-child{text-align:left;color:var(--cream);}
+  tbody td.best{color:var(--green);font-weight:500;}
+  tbody td.gold{color:var(--gold-light);}
+  tbody td.red{color:var(--red);}
+  .winner-row{background:rgba(201,168,76,0.04)!important;}
+
+  /* EQUIVALÊNCIA */
+  .equiv-box{background:rgba(91,155,213,0.07);border:1px solid rgba(91,155,213,0.2);border-radius:4px;padding:18px 22px;}
+  .equiv-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;margin-bottom:14px;}
+  .equiv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .equiv-item{padding:12px 14px;background:rgba(255,255,255,0.03);border-radius:3px;border:1px solid rgba(255,255,255,0.05);}
+  .equiv-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .equiv-value{font-family:'Cormorant Garamond',serif;font-size:20px;}
+  .equiv-sub{font-size:10px;color:var(--text-muted);margin-top:3px;}
+
+  /* GRÁFICO */
+  .chart-wrapper{background:var(--navy-card);border:1px solid rgba(201,168,76,0.1);border-radius:4px;padding:20px 20px 12px;}
+  .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .chart-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;}
+  canvas{width:100%!important;max-height:240px;}
+
+  .insight-box{background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:4px;padding:16px 20px;display:flex;gap:12px;}
+  .insight-icon{font-size:18px;flex-shrink:0;}
+  .insight-text{font-size:13px;line-height:1.7;color:rgba(245,240,232,0.82);font-weight:300;}
+  .insight-text strong{color:var(--cream);font-weight:500;}
+
+  .ir-info{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:3px;padding:12px 16px;font-size:12px;color:var(--text-muted);line-height:1.7;}
+  .ir-info strong{color:var(--cream);}
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .animate-in{animation:fadeIn 0.35s ease both;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div><div class="logo-name">Gabriel Fleury</div><div class="logo-sub">Consultoria Financeira</div></div>
+  <a href="../index.html" class="nav-back">← Todas as ferramentas</a>
+</nav>
+
+<div class="page-hero">
+  <div class="breadcrumb">Ferramentas · Investimentos</div>
+  <h1 class="page-title">Comparador de <em>Renda Fixa</em></h1>
+  <p class="page-desc">Compare CDB, Tesouro Selic, LCI e LCA considerando alíquota de IR, prazo e rentabilidade líquida real. Descubra qual investimento entrega mais no seu bolso.</p>
+</div>
+
+<div class="container">
+
+  <!-- PARÂMETROS GERAIS -->
+  <div class="inputs-top">
+    <div class="card">
+      <div class="card-title">Valor investido</div>
+      <div class="field-group">
+        <div class="field-label"><span>Capital inicial</span><span class="field-val" id="lbl-capital">R$ 10.000</span></div>
+        <div class="input-wrapper"><span class="inp-prefix">R$</span>
+          <input type="number" id="capital" value="10000" min="100" step="500" oninput="syncL('capital','lbl-capital','cur')">
+        </div>
+        <input type="range" id="range-capital" min="1000" max="500000" step="1000" value="10000"
+          oninput="document.getElementById('capital').value=this.value;syncL('capital','lbl-capital','cur')">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Prazo</div>
+      <div class="field-group">
+        <div class="field-label"><span>Período de investimento</span><span class="field-val" id="lbl-prazo">12 meses</span></div>
+        <div class="input-wrapper"><span class="inp-prefix" style="font-size:10px;left:8px">meses</span>
+          <input type="number" id="prazo" value="12" min="1" max="120" step="1" style="padding-left:52px" oninput="syncL('prazo','lbl-prazo','mes')">
+        </div>
+        <input type="range" id="range-prazo" min="1" max="120" step="1" value="12"
+          oninput="document.getElementById('prazo').value=this.value;syncL('prazo','lbl-prazo','mes')">
+        <div class="field-hint">Prazo determina a alíquota de IR para produtos tributados</div>
+      </div>
+      <div class="ir-info" style="margin-top:8px">
+        <strong>Tabela IR regressiva:</strong><br>
+        Até 180 dias: 22,5% · 181–360: 20% · 361–720: 17,5% · Acima de 720: 15%
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">CDI de referência</div>
+      <div class="field-group">
+        <div class="field-label"><span>CDI anual atual</span><span class="field-val" id="lbl-cdi">13,00% a.a.</span></div>
+        <div class="input-wrapper"><span class="inp-prefix">%</span>
+          <input type="number" id="cdi" value="13" min="1" max="30" step="0.25" style="padding-left:32px" oninput="syncL('cdi','lbl-cdi','pct-a')">
+        </div>
+        <input type="range" id="range-cdi" min="5" max="25" step="0.25" value="13"
+          oninput="document.getElementById('cdi').value=this.value;syncL('cdi','lbl-cdi','pct-a')">
+        <div class="field-hint">Usado para calcular CDB % do CDI e equivalência</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="produtos-grid">
+
+    <!-- CDB -->
+    <div class="produto-card">
+      <div class="produto-header">
+        <div class="produto-nome" style="color:var(--gold)">CDB</div>
+        <div class="produto-badge badge-tributado">Com IR</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label"><span>Rentabilidade</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <button class="tipo-btn active" id="cdb-pct-btn" onclick="setTipo('cdb','pct',this)" style="padding:7px;font-size:11px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--gold-light);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% do CDI</button>
+          <button class="tipo-btn" id="cdb-aa-btn" onclick="setTipo('cdb','aa',this)" style="padding:7px;font-size:11px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);color:var(--text-muted);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% a.a.</button>
+        </div>
+        <div class="input-wrapper"><span class="inp-prefix">%</span>
+          <input type="number" id="cdb-taxa" value="110" min="0" max="200" step="0.5" oninput="">
+        </div>
+        <div class="field-hint" id="cdb-hint">Ex: 110% do CDI</div>
+      </div>
+    </div>
+
+    <!-- TESOURO SELIC -->
+    <div class="produto-card">
+      <div class="produto-header">
+        <div class="produto-nome" style="color:var(--blue)">Tesouro Selic</div>
+        <div class="produto-badge badge-tributado">Com IR</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label"><span>Rentabilidade</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <button class="tipo-btn active" id="teso-pct-btn" onclick="setTipo('teso','pct',this)" style="padding:7px;font-size:11px;background:rgba(91,155,213,0.1);border:1px solid rgba(91,155,213,0.3);color:var(--blue);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% do CDI</button>
+          <button class="tipo-btn" id="teso-aa-btn" onclick="setTipo('teso','aa',this)" style="padding:7px;font-size:11px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);color:var(--text-muted);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% a.a.</button>
+        </div>
+        <div class="input-wrapper"><span class="inp-prefix">%</span>
+          <input type="number" id="teso-taxa" value="100" min="0" max="200" step="0.5" oninput="">
+        </div>
+        <div class="field-hint" id="teso-hint">Tesouro Selic: ~100% do CDI</div>
+      </div>
+    </div>
+
+    <!-- LCI -->
+    <div class="produto-card">
+      <div class="produto-header">
+        <div class="produto-nome" style="color:var(--green)">LCI</div>
+        <div class="produto-badge badge-isento">Isento IR</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label"><span>Rentabilidade</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <button class="tipo-btn active" id="lci-pct-btn" onclick="setTipo('lci','pct',this)" style="padding:7px;font-size:11px;background:rgba(76,175,130,0.1);border:1px solid rgba(76,175,130,0.3);color:var(--green);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% do CDI</button>
+          <button class="tipo-btn" id="lci-aa-btn" onclick="setTipo('lci','aa',this)" style="padding:7px;font-size:11px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);color:var(--text-muted);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% a.a.</button>
+        </div>
+        <div class="input-wrapper"><span class="inp-prefix">%</span>
+          <input type="number" id="lci-taxa" value="90" min="0" max="200" step="0.5" oninput="">
+        </div>
+        <div class="field-hint" id="lci-hint">Isenta de IR para PF</div>
+      </div>
+    </div>
+
+    <!-- LCA -->
+    <div class="produto-card">
+      <div class="produto-header">
+        <div class="produto-nome" style="color:var(--purple)">LCA</div>
+        <div class="produto-badge badge-isento">Isento IR</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label"><span>Rentabilidade</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <button class="tipo-btn active" id="lca-pct-btn" onclick="setTipo('lca','pct',this)" style="padding:7px;font-size:11px;background:rgba(155,127,212,0.1);border:1px solid rgba(155,127,212,0.3);color:var(--purple);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% do CDI</button>
+          <button class="tipo-btn" id="lca-aa-btn" onclick="setTipo('lca','aa',this)" style="padding:7px;font-size:11px;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);color:var(--text-muted);border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif">% a.a.</button>
+        </div>
+        <div class="input-wrapper"><span class="inp-prefix">%</span>
+          <input type="number" id="lca-taxa" value="88" min="0" max="200" step="0.5" oninput="">
+        </div>
+        <div class="field-hint" id="lca-hint">Isenta de IR para PF</div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="calc-btn" onclick="calcular()">Comparar investimentos</button>
+
+  <!-- RESULTADO -->
+  <div class="resultado" id="resultado">
+
+    <div class="ranking-grid animate-in" id="ranking-grid"></div>
+
+    <div class="tabela-wrapper animate-in" style="animation-delay:0.08s">
+      <div class="tabela-titulo">Comparativo detalhado</div>
+      <table id="tabela-comp"></table>
+    </div>
+
+    <div class="equiv-box animate-in" style="animation-delay:0.12s" id="equiv-box"></div>
+
+    <div class="chart-wrapper animate-in" style="animation-delay:0.15s">
+      <div class="chart-header">
+        <div class="chart-title">Montante ao longo do tempo</div>
+      </div>
+      <canvas id="meuChart"></canvas>
+    </div>
+
+    <div class="insight-box animate-in" style="animation-delay:0.18s" id="insight-box"></div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+let chartInst=null;
+const tipos={cdb:'pct',teso:'pct',lci:'pct',lca:'pct'};
+
+function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});}
+function fmtS(v){if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(1).replace('.',',')+'K';return fmt(v);}
+function pct(v){return v.toFixed(2).replace('.',',')+' %';}
+
+function syncL(id,lblId,type){
+  const v=parseFloat(document.getElementById(id).value)||0;
+  const r=document.getElementById('range-'+id);if(r)r.value=v;
+  const l=document.getElementById(lblId);if(!l)return;
+  if(type==='cur')l.textContent=fmt(v);
+  else if(type==='pct-a')l.textContent=v.toFixed(2).replace('.',',')+' % a.a.';
+  else if(type==='mes')l.textContent=v+' meses';
+}
+
+function setTipo(prod,tipo,el){
+  tipos[prod]=tipo;
+  const ids=[prod+'-pct-btn',prod+'-aa-btn'];
+  ids.forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){b.style.background='rgba(255,255,255,0.03)';b.style.color='var(--text-muted)';b.style.borderColor='rgba(201,168,76,0.12)';}
+  });
+  const cores={cdb:{bg:'rgba(201,168,76,0.1)',border:'rgba(201,168,76,0.3)',color:'var(--gold-light)'},teso:{bg:'rgba(91,155,213,0.1)',border:'rgba(91,155,213,0.3)',color:'var(--blue)'},lci:{bg:'rgba(76,175,130,0.1)',border:'rgba(76,175,130,0.3)',color:'var(--green)'},lca:{bg:'rgba(155,127,212,0.1)',border:'rgba(155,127,212,0.3)',color:'var(--purple)'}};
+  const c=cores[prod];
+  el.style.background=c.bg;el.style.borderColor=c.border;el.style.color=c.color;
+  const hints={pct:'% do CDI informado acima',aa:'Taxa prefixada ao ano'};
+  document.getElementById(prod+'-hint').textContent=hints[tipo];
+}
+
+function getAliquotaIR(meses){
+  if(meses<=6)return 0.225;
+  if(meses<=12)return 0.20;
+  if(meses<=24)return 0.175;
+  return 0.15;
+}
+
+function calcRendimento(taxaInput,tipo,cdiAnual,meses,tributado,capital){
+  const cdiMensal=Math.pow(1+cdiAnual/100,1/12)-1;
+  let taxaAnual;
+  if(tipo==='pct') taxaAnual=(taxaInput/100)*cdiAnual;
+  else taxaAnual=taxaInput;
+  const taxaMensal=Math.pow(1+taxaAnual/100,1/12)-1;
+  const montanteBruto=capital*Math.pow(1+taxaMensal,meses);
+  const rendimentoBruto=montanteBruto-capital;
+  let ir=0,rendimentoLiquido=rendimentoBruto;
+  if(tributado){
+    ir=rendimentoBruto*getAliquotaIR(meses);
+    rendimentoLiquido=rendimentoBruto-ir;
+  }
+  const montanteLiquido=capital+rendimentoLiquido;
+  const taxaLiquidaAnual=(Math.pow(montanteLiquido/capital,12/meses)-1)*100;
+  return{taxaAnual,taxaMensal:taxaMensal*100,montanteBruto,rendimentoBruto,ir,rendimentoLiquido,montanteLiquido,taxaLiquidaAnual};
+}
+
+function calcular(){
+  const capital=parseFloat(document.getElementById('capital').value)||0;
+  const prazo=parseInt(document.getElementById('prazo').value)||0;
+  const cdi=parseFloat(document.getElementById('cdi').value)||0;
+  if(!capital||!prazo||!cdi){alert('Preencha todos os campos.');return;}
+
+  const produtos=[
+    {id:'cdb',nome:'CDB',cor:'#C9A84C',tributado:true},
+    {id:'teso',nome:'Tesouro Selic',cor:'#5B9BD5',tributado:true},
+    {id:'lci',nome:'LCI',cor:'#4CAF82',tributado:false},
+    {id:'lca',nome:'LCA',cor:'#9B7FD4',tributado:false},
+  ];
+
+  const resultados=produtos.map(p=>{
+    const taxa=parseFloat(document.getElementById(p.id+'-taxa').value)||0;
+    const tipo=tipos[p.id];
+    const r=calcRendimento(taxa,tipo,cdi,prazo,p.tributado,capital);
+    return{...p,taxa,tipo,...r};
+  });
+
+  resultados.sort((a,b)=>b.montanteLiquido-a.montanteLiquido);
+
+  renderResultados(resultados,capital,prazo,cdi);
+}
+
+function renderResultados(res,capital,prazo,cdi){
+  document.getElementById('resultado').classList.add('visivel');
+  const winner=res[0];
+
+  // RANKING
+  const posIcons=['🥇','🥈','🥉','4º'];
+  document.getElementById('ranking-grid').innerHTML=res.map((r,i)=>`
+    <div class="rank-card ${i===0?'winner':''}">
+      <div class="rank-num ${i===0?'gold':''}">${posIcons[i]} ${i===0?'Melhor opção':i+1+'º lugar'}</div>
+      <div class="rank-nome" style="color:${r.cor}">${r.nome}</div>
+      <div class="rank-valor">${fmtS(r.montanteLiquido)}</div>
+      <div class="rank-label">Montante líquido</div>
+      <div class="rank-taxa" style="margin-top:10px">
+        Taxa: ${r.tipo==='pct'?r.taxa+'% CDI':pct(r.taxa)+' a.a.'}<br>
+        Líquida: ${pct(r.taxaLiquidaAnual)} a.a.
+      </div>
+      <div class="rank-liquido" style="color:${r.cor};margin-top:6px">+${fmtS(r.rendimentoLiquido)}</div>
+      <div class="rank-rendimento">rendimento líquido</div>
+      ${r.tributado?`<div style="font-size:10px;color:var(--red);margin-top:4px">IR: ${fmt(r.ir)}</div>`:`<div style="font-size:10px;color:var(--green);margin-top:4px">Isento de IR</div>`}
+    </div>
+  `).join('');
+
+  // TABELA
+  const aliq=getAliquotaIR(prazo);
+  document.getElementById('tabela-comp').innerHTML=`
+    <thead><tr>
+      <th>Produto</th><th>Taxa bruta</th><th>Taxa líquida a.a.</th><th>Rendimento bruto</th><th>IR pago</th><th>Rendimento líquido</th><th>Montante final</th>
+    </tr></thead>
+    <tbody>
+      ${res.map((r,i)=>`
+        <tr class="${i===0?'winner-row':''}">
+          <td style="color:${r.cor};font-weight:500">${r.nome}${r.tributado?' ('+Math.round(aliq*100)+'% IR)':' (isento)'}</td>
+          <td>${r.tipo==='pct'?r.taxa+'% CDI':pct(r.taxa)+' a.a.'}</td>
+          <td class="${i===0?'best':''}">${pct(r.taxaLiquidaAnual)}</td>
+          <td>${fmt(r.rendimentoBruto)}</td>
+          <td class="${r.tributado?'red':''}">${r.tributado?fmt(r.ir):'—'}</td>
+          <td class="${i===0?'best':''}">${fmt(r.rendimentoLiquido)}</td>
+          <td class="${i===0?'gold':''}">${fmt(r.montanteLiquido)}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+
+  // EQUIVALÊNCIA — quanto LCI/LCA precisa render para equivaler ao CDB
+  const cdbRes=res.find(r=>r.id==='cdb');
+  const aliqCDB=getAliquotaIR(prazo);
+  const taxaBrutaCDB=cdbRes.tipo==='pct'?cdbRes.taxa/100*cdi:cdbRes.taxa;
+  const equivLCI=(taxaBrutaCDB*(1-aliqCDB)).toFixed(2);
+  const equivPctCDI=(taxaBrutaCDB*(1-aliqCDB)/cdi*100).toFixed(1);
+  document.getElementById('equiv-box').innerHTML=`
+    <div class="equiv-title">Equivalência bruta vs líquida</div>
+    <div class="equiv-grid">
+      <div class="equiv-item">
+        <div class="equiv-label">CDB bruto</div>
+        <div class="equiv-value" style="color:var(--gold-light)">${pct(taxaBrutaCDB)} a.a.</div>
+        <div class="equiv-sub">Antes do IR de ${Math.round(aliqCDB*100)}%</div>
+      </div>
+      <div class="equiv-item">
+        <div class="equiv-label">LCI/LCA equivalente ao CDB</div>
+        <div class="equiv-value" style="color:var(--green)">${pct(parseFloat(equivLCI))} a.a.</div>
+        <div class="equiv-sub">~${equivPctCDI}% do CDI para empatar</div>
+      </div>
+      <div class="equiv-item">
+        <div class="equiv-label">Prazo e alíquota IR</div>
+        <div class="equiv-value" style="color:var(--blue)">${Math.round(aliqCDB*100)}%</div>
+        <div class="equiv-sub">Para ${prazo} meses de aplicação</div>
+      </div>
+    </div>
+  `;
+
+  // GRÁFICO evolução mensal
+  const labels=[],datasets=[];
+  const cores={cdb:'#C9A84C',teso:'#5B9BD5',lci:'#4CAF82',lca:'#9B7FD4'};
+  for(let m=0;m<=prazo;m++) labels.push(m===0?'Hoje':'Mês '+m);
+  res.forEach(r=>{
+    const data=[capital];
+    for(let m=1;m<=prazo;m++){
+      const ri=calcRendimento(r.taxa,r.tipo,cdi,m,r.tributado,capital);
+      data.push(ri.montanteLiquido);
+    }
+    datasets.push({label:r.nome,data,borderColor:r.cor,backgroundColor:'transparent',borderWidth:2,pointRadius:0,tension:0.3});
+  });
+
+  const ctx=document.getElementById('meuChart').getContext('2d');
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(ctx,{type:'line',data:{labels,datasets},options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,labels:{color:'rgba(245,240,232,0.6)',font:{size:11},boxWidth:10}},tooltip:{backgroundColor:'#0f2444',borderColor:'rgba(201,168,76,0.3)',borderWidth:1,titleColor:'#e2c47a',bodyColor:'rgba(245,240,232,0.7)',padding:10,callbacks:{label:c=>`${c.dataset.label}: ${fmtS(c.parsed.y)}`}}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(245,240,232,0.35)',font:{size:10},maxTicksLimit:13}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'rgba(245,240,232,0.35)',font:{size:10},callback:v=>fmtS(v)}}}}});
+
+  // INSIGHT
+  const segundo=res[1];
+  const difLiquida=winner.montanteLiquido-segundo.montanteLiquido;
+  document.getElementById('insight-box').innerHTML=`
+    <div class="insight-icon">💡</div>
+    <div class="insight-text">
+      ${gerarInsight(winner,segundo,difLiquida,prazo,aliqCDB,equivLCI,equivPctCDI,cdi)}
+    </div>
+  `;
+
+  document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function gerarInsight(w,s,dif,prazo,aliq,equivLCI,equivPctCDI,cdi){
+  const isIsentoWinner=!w.tributado;
+  const mesesDesc=prazo<=6?'(22,5% IR)':prazo<=12?'(20% IR)':prazo<=24?'(17,5% IR)':'(15% IR)';
+  if(isIsentoWinner){
+    return `<strong>${w.nome} vence</strong> mesmo com taxa bruta menor porque é isento de IR. Com ${prazo} meses de prazo ${mesesDesc}, a isenção compensa a diferença de taxa. Para um CDB competir com essa LCI/LCA, precisaria render pelo menos <strong>${pct(parseFloat(equivLCI))} a.a.</strong> (~${equivPctCDI}% do CDI). A vantagem sobre o segundo colocado é de <strong>${fmt(dif)}</strong>.`;
+  }
+  return `<strong>${w.nome} vence</strong> com rentabilidade líquida de <strong>${pct(w.taxaLiquidaAnual)} a.a.</strong>, gerando <strong>${fmt(dif)}</strong> a mais que o segundo colocado (${s.nome}) em ${prazo} meses. A LCI/LCA precisaria render pelo menos <strong>${pct(parseFloat(equivLCI))} a.a.</strong> (${equivPctCDI}% do CDI) para empatar com o CDB após IR ${mesesDesc}.`;
+}
+
+// Init
+['capital','prazo','cdi'].forEach(id=>{
+  const types={capital:'cur',prazo:'mes',cdi:'pct-a'};
+  const lbls={capital:'lbl-capital',prazo:'lbl-prazo',cdi:'lbl-cdi'};
+  syncL(id,lbls[id],types[id]);
+});
+window.addEventListener('load',()=>calcular());
+</script>
+</body>
+</html>
